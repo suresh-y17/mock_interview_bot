@@ -1,0 +1,47 @@
+name: tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Seed database
+        run: python -m app.db
+
+      - name: Run scoring + learning-loop tests
+        run: python tests/test_scoring.py
+
+      - name: Smoke-test the API endpoints
+        run: |
+          python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/api/health && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/api/companies > /dev/null
+          curl -sf -X POST http://127.0.0.1:8000/api/sessions \
+            -H 'Content-Type: application/json' \
+            -d '{"student_name":"CI","company":"TCS","round":"technical","limit":3}' > /dev/null
+          echo "API smoke test passed"
+
+      - name: Verify the offline build is self-contained
+        run: |
+          python standalone/build.py
+          if grep -Eq '(src|href)="https?://' standalone.html; then
+            echo "ERROR: standalone.html references an external URL"; exit 1
+          fi
+          echo "standalone.html is self-contained"

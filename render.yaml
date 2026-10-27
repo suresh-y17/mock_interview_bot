@@ -1,0 +1,11 @@
+# Render blueprint — lets Render configure the whole service from the repo.
+# In the Render dashboard: New + -> Blueprint -> pick this repo. Nothing to type.
+services:
+  - type: web
+    name: interviewloop
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash run.sh
+    healthCheckPath: /api/health
+    autoDeploy: true

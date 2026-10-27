@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>InterviewLoop — Company-Specific Mock Interviews</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#131a30; --panel2:#1a2340; --line:#26304f;
+    --text:#e8ecf8; --muted:#93a0c2; --accent:#6c8cff; --accent2:#22d3a6;
+    --warn:#ffb020; --bad:#ff5c7a; --good:#22d3a6; --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 80% -10%,#1c2a55 0%,var(--bg) 55%);
+    color:var(--text); font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:22px 18px 70px}
+  header{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:6px 0 20px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:11px}
+  .logo{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;font-weight:800;font-size:17px;color:#08102a;
+  }
+  .brand h1{font-size:17px;margin:0;letter-spacing:.2px}
+  .brand p{margin:0;font-size:12px;color:var(--muted)}
+  .pill{font-size:11.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);
+        background:var(--panel);color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 9px var(--good)}
+  .dot.off{background:var(--warn);box-shadow:0 0 9px var(--warn)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .grid{display:grid;gap:16px}
+  .cols-2{grid-template-columns:1.15fr .85fr}
+  @media(max-width:880px){.cols-2{grid-template-columns:1fr}}
+  h2{font-size:15px;margin:0 0 4px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:12.5px;margin:0 0 15px}
+  label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:600;letter-spacing:.3px}
+  input,select,textarea{
+    width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:11px 12px;font:inherit;outline:none;transition:border .15s
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+  textarea{resize:vertical;min-height:96px;line-height:1.55}
+  button{
+    font:inherit;font-weight:650;border-radius:10px;border:1px solid transparent;cursor:pointer;
+    padding:11px 17px;transition:transform .12s,filter .15s;color:#08102a;
+    background:linear-gradient(135deg,var(--accent),#8aa2ff)
+  }
+  button:hover{transform:translateY(-1px);filter:brightness(1.07)}
+  button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  button.ghost{background:transparent;color:var(--text);border-color:var(--line)}
+  button.good{background:linear-gradient(135deg,var(--accent2),#4ee0bb)}
+  button.small{padding:7px 12px;font-size:12.5px;border-radius:9px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{
+    font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--muted);cursor:pointer;user-select:none
+  }
+  .chip.on{border-color:var(--accent);color:#cdd8ff;background:#1e2a52}
+  .chip.static{cursor:default}
+  .company-card{
+    border:1px solid var(--line);background:var(--panel2);border-radius:13px;padding:13px;
+    cursor:pointer;transition:.15s
+  }
+  .company-card:hover{border-color:#3a4880;transform:translateY(-1px)}
+  .company-card.on{border-color:var(--accent);background:#1b2650;box-shadow:0 0 0 1px var(--accent) inset}
+  .company-card .nm{font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;gap:8px}
+  .company-card .meta{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:999px;background:#233060;color:#a9baff}
+  .tag.prod{background:#123f34;color:#6ee7c0}
+  .score-ring{width:64px;height:64px;flex:0 0 auto}
+  .stat{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px dashed #222c4a}
+  .stat:last-child{border:0}
+  .stat b{color:var(--text);font-weight:650}
+  .muted{color:var(--muted)}
+  .chat{display:flex;flex-direction:column;gap:13px;max-height:52vh;overflow-y:auto;padding-right:5px}
+  .msg{display:flex;gap:10px;animation:in .25s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .msg .av{width:29px;height:29px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .msg.bot .av{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08102a}
+  .msg.me .av{background:#2b3766;color:#c6d2f7}
+  .bubble{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14px;max-width:94%}
+  .msg.me .bubble{background:#1d2a52;border-color:#2c3a66}
+  .msg.me{align-self:flex-end;flex-direction:row-reverse}
+  .scorebox{border-radius:12px;padding:13px 15px;border:1px solid var(--line);background:var(--panel2);margin-top:12px}
+  .scorebox .top{display:flex;align-items:center;gap:14px}
+  .scorebox .n{font-size:26px;font-weight:800;line-height:1}
+  .bars{display:grid;gap:6px;margin-top:11px}
+  .bar{display:grid;grid-template-columns:96px 1fr 34px;gap:9px;align-items:center;font-size:11.5px;color:var(--muted)}
+  .track{display:block;height:6px;background:#212c4d;border-radius:99px;overflow:hidden}
+  .fill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .list{margin:7px 0 0;padding-left:17px;font-size:12.8px;color:#c3cde9}
+  .list li{margin:4px 0}
+  .banner{border-radius:11px;padding:11px 13px;font-size:12.6px;border:1px solid var(--line);background:var(--panel2)}
+  .banner.hot{border-color:#3a4a86;background:#1a2350;color:#c3d1ff}
+  .banner.warn{border-color:#5a4520;background:#2a2214;color:#ffd591}
+  .mic{position:relative}
+  .mic.rec{background:linear-gradient(135deg,var(--bad),#ff8aa0);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,122,.5)}50%{box-shadow:0 0 0 12px rgba(255,92,122,0)}}
+  .hide{display:none!important}
+  .kbd{font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--muted)}
+  .foot{color:var(--muted);font-size:11.5px;text-align:center;margin-top:26px;line-height:1.7}
+  .advice{font-size:12.4px;color:#b9c6e8;border-left:3px solid var(--accent);padding-left:11px;margin:9px 0}
+  .review{border-bottom:1px dashed #222c4a;padding:9px 0;font-size:12.6px}
+  .review:last-child{border:0}
+  .stars{color:var(--warn);letter-spacing:1px;font-size:11px}
+  .progress{height:4px;background:#212c4d;border-radius:99px;overflow:hidden;margin:12px 0}
+  .progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1d2a52;border:1px solid var(--line);
+    padding:10px 16px;border-radius:10px;font-size:13px;z-index:99;animation:in .2s}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">IL</div>
+      <div>
+        <h1>InterviewLoop</h1>
+        <p>Company-specific mock interviews that learn from every review</p>
+      </div>
+    </div>
+    <div class="row">
+      <span class="pill" id="enginePill"><span class="dot"></span> engine</span>
+      <span class="pill" id="voicePill"><span class="dot off"></span> voice off</span>
+    </div>
+  </header>
+
+  <!-- ================= SETUP ================= -->
+  <section id="setup">
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Start a mock interview</h2>
+        <p class="sub">Pick a company. The bot weights questions by what past students reported — not a generic syllabus.</p>
+
+        <div style="margin-bottom:14px">
+          <label for="studentName">Your name</label>
+          <input id="studentName" placeholder="e.g. Ananya" autocomplete="off" />
+        </div>
+
+        <label>Choose a company</label>
+        <div id="companyGrid" class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-bottom:15px"></div>
+
+        <div class="row" style="justify-content:space-between;align-items:flex-end">
+          <div style="flex:1;min-width:170px">
+            <label for="roundSel">Round</label>
+            <select id="roundSel"></select>
+          </div>
+          <div style="flex:0 0 118px">
+            <label for="lenSel">Length</label>
+            <select id="lenSel">
+              <option value="3">3 questions</option>
+              <option value="4" selected>4 questions</option>
+              <option value="5">5 questions</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:16px">
+          <button id="startBtn" class="good">Start interview →</button>
+          <button class="ghost small" id="voiceToggle">🎙 Voice mode: off</button>
+        </div>
+        <p class="sub" style="margin:12px 0 0" id="modeNote"></p>
+      </div>
+
+      <div class="card">
+        <h2 id="profTitle">Company intel</h2>
+        <p class="sub">Mined live from student reviews.</p>
+        <div id="profBody" class="muted" style="font-size:13px">Select a company to see what recent candidates reported.</div>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:16px">
+      <div class="card">
+        <h2>Add your review</h2>
+        <p class="sub">This is the learning loop. Your review immediately reshapes how this company's interviews are generated.</p>
+        <div class="row" style="margin-bottom:10px">
+          <div style="flex:1;min-width:120px">
+            <label for="rvCompany">Company</label>
+            <select id="rvCompany"></select>
+          </div>
+          <div style="flex:0 0 130px">
+            <label for="rvRound">Round</label>
+            <select id="rvRound"></select>
+          </div>
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <div style="flex:1">
+            <label>How hard did it feel?</label>
+            <div class="chips" id="rvDiff"></div>
+          </div>
+          <div style="flex:1">
+            <label>Your rating</label>
+            <div class="chips" id="rvRate"></div>
+          </div>
+        </div>
+        <label for="rvText">What did they actually ask?</label>
+        <textarea id="rvText" placeholder="They drilled SQL joins for 20 minutes, then asked about my project. Advice: revise DBMS properly."></textarea>
+        <div class="row" style="margin-top:11px">
+          <button id="rvSubmit">Submit review</button>
+          <span class="muted" style="font-size:12px">Anonymous-friendly · no login needed</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Recent reviews</h2>
+        <p class="sub" id="rvSub">What candidates said</p>
+        <div id="rvList" style="max-height:270px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTERVIEW ================= -->
+  <section id="interview" class="hide">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2 id="ivTitle">Interview</h2>
+          <p class="sub" id="ivSub" style="margin:2px 0 0"></p>
+        </div>
+        <div class="row">
+          <button class="ghost small" id="hintBtn">💡 Hint</button>
+          <button class="ghost small" id="skipBtn">Skip</button>
+          <button class="ghost small" id="endBtn">End & see report</button>
+        </div>
+      </div>
+      <div class="progress"><i id="progBar" style="width:0%"></i></div>
+      <div class="chat" id="chat"></div>
+
+      <div style="margin-top:14px">
+        <label for="answerBox">Your answer <span class="muted" id="answerHint">— speak or type. Think aloud.</span></label>
+        <textarea id="answerBox" placeholder="Type your answer, or press the mic and speak…"></textarea>
+        <div class="row" style="margin-top:10px;justify-content:space-between">
+          <div class="row">
+            <button class="mic" id="micBtn">🎙 Speak</button>
+            <button class="good" id="sendBtn">Send answer</button>
+          </div>
+          <span class="muted" style="font-size:11.5px"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> to send</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REPORT ================= -->
+  <section id="report" class="hide"></section>
+
+  <p class="foot">
+    InterviewLoop · curated question bank + rubric scoring + two learning loops<br>
+    Offline engine by default. Set <code>OPENAI_API_KEY</code> to upgrade feedback quality — scores stay rubric-anchored.
+  </p>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+const S = {
+  companies: [],
+  company: null,
+  sessionId: null,
+  seq: 0,
+  of: 0,
+  answeringProbe: false,
+  probeText: null,
+  voiceOn: false,
+  listening: false,
+  voicePersona: 'female',
+};
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function toast(msg, ms = 2600) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || `Request failed (${res.status})`);
+  return data;
+}
+
+/* ============================================================
+   VOICE — Web Speech API (no keys, no cost, runs in the browser)
+   ============================================================ */
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognizer = null;
+
+function voiceSupported() { return !!SpeechRec && 'speechSynthesis' in window; }
+
+function initVoice() {
+  if (!SpeechRec) return;
+  recognizer = new SpeechRec();
+  recognizer.continuous = true;
+  recognizer.interimResults = true;
+  recognizer.lang = 'en-IN';
+
+  let finalText = '';
+  recognizer.onstart = () => { S.listening = true; finalText = $('answerBox').value; syncMic(); };
+  recognizer.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalText += (finalText ? ' ' : '') + t.trim();
+      else interim += t;
+    }
+    $('answerBox').value = (finalText + ' ' + interim).replace(/\s+/g, ' ').trim();
+  };
+  recognizer.onerror = (e) => {
+    S.listening = false; syncMic();
+    if (e.error === 'not-allowed') toast('Microphone blocked. Allow mic access in your browser.');
+    else if (e.error !== 'aborted') toast('Voice error: ' + e.error);
+  };
+  recognizer.onend = () => { S.listening = false; syncMic(); };
+}
+
+function syncMic() {
+  const b = $('micBtn');
+  if (!b) return;
+  b.classList.toggle('rec', S.listening);
+  b.textContent = S.listening ? '⏹ Stop' : '🎙 Speak';
+}
+
+function toggleMic() {
+  if (!recognizer) { toast('Speech recognition needs Chrome/Edge (or a supported browser).'); return; }
+  if (S.listening) { recognizer.stop(); }
+  else {
+    try { recognizer.start(); }
+    catch (e) { toast('Could not start the mic. Try again.'); }
+  }
+}
+
+let voicesCache = [];
+function loadVoices() { voicesCache = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+if ('speechSynthesis' in window) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text, done) {
+  if (!S.voiceOn || !('speechSynthesis' in window) || !text) { if (done) done(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(String(text).replace(/[*#`_]/g, ''));
+  const want = S.voicePersona === 'male' ? ['male'] : ['female'];
+  const en = voicesCache.filter(v => /^en/i.test(v.lang));
+  const pick = en.find(v => want.some(w => v.name.toLowerCase().includes(w))) || en[0] || voicesCache[0];
+  if (pick) u.voice = pick;
+  u.lang = (pick && pick.lang) || 'en-IN';
+  u.rate = 0.97; u.pitch = 1.02;
+  u.onend = () => { if (done) done(); };
+  u.onerror = () => { if (done) done(); };
+  speechSynthesis.speak(u);
+  // Some engines never fire onend if cancelled — fail safe.
+  setTimeout(() => { if (done) done(); }, Math.min(22000, 2600 + String(text).length * 68));
+}
+
+function toggleVoiceMode() {
+  if (!voiceSupported()) { toast('This browser has no speech support. Chrome or Edge works best.'); return; }
+  S.voiceOn = !S.voiceOn;
+  $('voiceToggle').textContent = `🎙 Voice mode: ${S.voiceOn ? 'on' : 'off'}`;
+  $('voiceToggle').classList.toggle('good', S.voiceOn);
+  $('voicePill').innerHTML = `<span class="dot ${S.voiceOn ? '' : 'off'}"></span> voice ${S.voiceOn ? 'on' : 'off'}`;
+  if (!S.voiceOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+  toast(S.voiceOn
+    ? 'Voice mode on — the interviewer will speak and you can answer by mic.'
+    : 'Voice mode off — text only.');
+}
+
+/* ============================================================
+   SETUP SCREEN
+   ============================================================ */
+async function loadCompanies() {
+  const data = await api('/api/companies');
+  S.companies = data.companies;
+
+  const grid = $('companyGrid');
+  grid.innerHTML = S.companies.map(c => `
+    <div class="company-card" data-co="${esc(c.name)}">
+      <div class="nm"><span>${esc(c.name)}</span>
+        <span class="tag ${c.type === 'product' ? 'prod' : ''}">${c.type === 'product' ? 'product' : c.type === 'service' ? 'service' : 'general'}</span>
+      </div>
+      <div class="meta">${c.question_count} Qs${c.review_count ? ` · ${c.review_count} reviews` : ''}${c.avg_difficulty_felt ? ` · feels ${c.avg_difficulty_felt}/5` : ''}</div>
+    </div>`).join('');
+
+  grid.querySelectorAll('.company-card').forEach(el => {
+    el.onclick = () => selectCompany(el.dataset.co);
+  });
+
+  const rvCo = $('rvCompany');
+  rvCo.innerHTML = S.companies.map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+  rvCo.onchange = () => { fillRounds($('rvRound'), rvCo.value); loadReviews(); };
+
+  selectCompany(S.companies[0].name);
+}
+
+function selectCompany(name) {
+  S.company = S.companies.find(c => c.name === name);
+  document.querySelectorAll('.company-card').forEach(el =>
+    el.classList.toggle('on', el.dataset.co === name));
+  fillRounds($('roundSel'), name);
+  $('rvCompany').value = name;
+  fillRounds($('rvRound'), name);
+  loadProfile(name, $('roundSel').value);
+  loadReviews();
+}
+
+function fillRounds(sel, company) {
+  const c = S.companies.find(x => x.name === company);
+  if (!c) return;
+  sel.innerHTML = c.rounds.map(r =>
+    `<option value="${esc(r)}">${esc(prettyRound(r))}</option>`).join('');
+}
+
+const prettyRound = (r) => ({
+  aptitude: 'Aptitude', technical: 'Technical', hr: 'HR / Behavioural',
+  behavioral: 'Behavioural (STAR)', dsa: 'DSA / Coding',
+  system_design: 'System Design',
+}[r] || r);
+
+async function loadProfile(company, round) {
+  const el = $('profBody');
+  el.innerHTML = '<span class="muted">Mining reviews…</span>';
+  try {
+    const url = `/api/companies/${encodeURIComponent(company)}/profile` + (round ? `?round=${encodeURIComponent(round)}` : '');
+    const p = await api(url);
+    const hot = (p.hot_topics || []).slice(0, 7);
+    const max = hot.length ? hot[0].mentions : 1;
+    el.innerHTML = `
+      ${p.review_count === 0
+        ? '<div class="banner warn">No reviews yet for this company. Be the first — your review will shape the questions.</div>'
+        : `<div class="banner hot">
+             <b>${p.review_count}</b> review${p.review_count > 1 ? 's' : ''} mined${p.blended_company_wide ? ' (blended for this round)' : ''} ·
+             felt difficulty <b>${p.avg_difficulty_felt ?? '—'}/5</b> ·
+             rating <b>${p.avg_rating ?? '—'}/5</b>
+           </div>`}
+      ${hot.length ? `
+        <div style="margin-top:13px">
+          <div class="muted" style="font-size:11.5px;margin-bottom:7px;letter-spacing:.4px">WHAT THEY ACTUALLY ASKED (weighted by recency)</div>
+          ${hot.map(h => `
+            <div class="bar" style="grid-template-columns:118px 1fr 28px">
+              <span style="color:#c3cde9">${esc(h.topic)}</span>
+              <span class="track"><span class="fill" style="width:${Math.max(8, (h.mentions / max) * 100)}%"></span></span>
+              <span>${h.mentions}</span>
+            </div>`).join('')}
+        </div>` : ''}
+      ${p.advice && p.advice.length ? `
+        <div style="margin-top:14px">
+          <div class="muted" style="font-size:11.5px;margin-bottom:5px;letter-spacing:.4px">REPEATED ADVICE FROM PEERS</div>
+          ${p.advice.map(a => `<div class="advice">“${esc(a)}”</div>`).join('')}
+        </div>` : ''}
+      ${p.coverage_gaps && p.coverage_gaps.length ? `
+        <div class="banner" style="margin-top:13px;font-size:12px">
+          <b>Gap detected:</b> students mention ${p.coverage_gaps.slice(0, 3).map(esc).join(', ')} but our bank has no question on it yet.
+          <span class="muted">→ add questions here to improve the bot.</span>
+        </div>` : ''}
+    `;
+  } catch (e) {
+    el.innerHTML = `<span class="muted">Could not load intel: ${esc(e.message)}</span>`;
+  }
+}
+
+async function loadReviews() {
+  const co = $('rvCompany').value;
+  const list = $('rvList');
+  list.innerHTML = '<span class="muted">Loading…</span>';
+  try {
+    const data = await api('/api/reviews?company=' + encodeURIComponent(co));
+    $('rvSub').textContent = `${data.reviews.length} review${data.reviews.length === 1 ? '' : 's'} for ${co}`;
+    list.innerHTML = data.reviews.length ? data.reviews.map(r => `
+      <div class="review">
+        <div class="row" style="justify-content:space-between">
+          <b style="font-size:12.5px">${esc(r.student_name)} · ${esc(prettyRound(r.round))}</b>
+          <span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+        </div>
+        <div style="margin-top:3px">${esc(r.text)}</div>
+        <div class="muted" style="font-size:11px;margin-top:3px">felt ${r.difficulty_felt}/5</div>
+      </div>`).join('') : '<span class="muted">No reviews yet.</span>';
+  } catch (e) { list.innerHTML = `<span class="muted">${esc(e.message)}</span>`; }
+}
+
+/* rating chips */
+function buildChips(el, max, selected) {
+  el.innerHTML = Array.from({ length: max }, (_, i) =>
+    `<span class="chip ${i + 1 === selected ? 'on' : ''}" data-v="${i + 1}">${i + 1}</span>`).join('');
+  el.querySelectorAll('.chip').forEach(c => {
+    c.onclick = () => {
+      el.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+      c.classList.add('on');
+      el.dataset.value = c.dataset.v;
+    };
+  });
+  el.dataset.value = selected;
+}
+
+async function submitReview() {
+  const text = $('rvText').value.trim();
+  if (text.length < 10) return toast('Please write a little more (at least 10 characters).');
+  const name = ($('studentName').value.trim() || 'Anonymous');
+  const btn = $('rvSubmit');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  try {
+    const res = await api('/api/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        student_name: name,
+        company: $('rvCompany').value,
+        round: $('rvRound').value,
+        difficulty_felt: Number($('rvDiff').dataset.value || 3),
+        rating: Number($('rvRate').dataset.value || 4),
+        text,
+      }),
+    });
+    $('rvText').value = '';
+    toast('Review saved — future interviews now weight these topics.');
+    loadReviews();
+    if (S.company && S.company.name === $('rvCompany').value) {
+      loadProfile(S.company.name, $('roundSel').value);
+    }
+  } catch (e) { toast(e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Submit review'; }
+}
+
+/* ============================================================
+   INTERVIEW
+   ============================================================ */
+async function startInterview() {
+  const name = $('studentName').value.trim();
+  if (!name) { toast('Enter your name first — it keeps your progress across sessions.'); $('studentName').focus(); return; }
+
+  const btn = $('startBtn');
+  btn.disabled = true; btn.textContent = 'Preparing…';
+  try {
+    const data = await api('/api/sessions', {
+      method: 'POST',
+      body: JSON.stringify({
+        student_name: name,
+        company: $('companyGrid').querySelector('.company-card.on').dataset.co,
+        round: $('roundSel').value,
+        limit: Number($('lenSel').value),
+      }),
+    });
+
+    S.sessionId = data.session_id;
+    S.seq = 1; S.of = data.total_questions;
+    S.answeringProbe = false; S.probeText = null;
+
+    $('setup').classList.add('hide');
+    $('report').classList.add('hide');
+    $('interview').classList.remove('hide');
+    $('ivTitle').textContent = `${data.company} · ${prettyRound(data.round)}`;
+    $('ivSub').textContent = `${data.total_questions} questions · ${data.pool_size} questions in pool · personalised from ${data.profile.review_count} reviews`;
+
+    $('chat').innerHTML = '';
+    addMsg('bot', data.intro);
+
+    const weakKeys = Object.keys(data.weak_areas || {});
+    if (weakKeys.length) {
+      const weakest = weakKeys.sort((a, b) => data.weak_areas[a] - data.weak_areas[b]).slice(0, 3);
+      addBanner(`Focusing on your weak areas from past sessions: <b>${weakest.map(esc).join(', ')}</b>`);
+    }
+    if (data.why_selected && data.why_selected.review_match >= 0.5) {
+      addBanner(`Selected because past candidates reported this topic for ${esc(data.company)}.`, 'hot');
+    }
+
+    updateProgress(1);
+    addMsg('bot', data.first.text, { speak: data.first.speak });
+    $('answerBox').value = '';
+    $('answerBox').focus();
+  } catch (e) {
+    toast(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Start interview →';
+  }
+}
+
+function addMsg(who, text, opts = {}) {
+  const c = $('chat');
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.innerHTML = `<div class="av">${who === 'bot' ? 'AI' : 'You'}</div>
+                 <div class="bubble">${esc(text).replace(/\n/g, '<br>')}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+  if (opts.speak) speak(opts.speak);
+}
+
+function addBanner(html, kind = '') {
+  const c = $('chat');
+  const d = document.createElement('div');
+  d.className = 'banner ' + kind;
+  d.style.fontSize = '12.2px';
+  d.innerHTML = html;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function updateProgress(seq) {
+  $('progBar').style.width = Math.min(100, (seq / S.of) * 100) + '%';
+}
+
+const BAND_COLOR = (s) => s >= 7 ? 'var(--good)' : s >= 5.5 ? 'var(--warn)' : 'var(--bad)';
+
+function addScoreCard(sc) {
+  const d = document.createElement('div');
+  d.className = 'scorebox';
+  const dims = sc.dimensions || {};
+  const order = ['coverage', 'structure', 'specificity', 'depth', 'confidence'];
+  d.innerHTML = `
+    <div class="top">
+      <div style="text-align:center">
+        <div class="n" style="color:${BAND_COLOR(sc.overall)}">${sc.overall}</div>
+        <div class="muted" style="font-size:10.5px">/10</div>
+      </div>
+      <div style="flex:1">
+        <b style="font-size:13px">${esc(sc.band || '')}</b>
+        <div class="muted" style="font-size:12px;margin-top:2px">${esc(sc.verdict || '')}</div>
+        ${sc.coaching ? `<div style="font-size:12.6px;margin-top:7px;color:#cdd8f5">${esc(sc.coaching)}</div>` : ''}
+      </div>
+    </div>
+    <div class="bars">
+      ${order.filter(k => dims[k] !== undefined).map(k => `
+        <div class="bar"><span>${k}</span>
+          <span class="track"><span class="fill" style="width:${dims[k] * 10}%"></span></span>
+          <span>${dims[k]}</span></div>`).join('')}
+    </div>
+    ${sc.strengths && sc.strengths.length ? `<ul class="list">${sc.strengths.map(s => `<li>✅ ${esc(s)}</li>`).join('')}</ul>` : ''}
+    ${sc.improvements && sc.improvements.length ? `<ul class="list">${sc.improvements.map(s => `<li>🔧 ${esc(s)}</li>`).join('')}</ul>` : ''}
+  `;
+  $('chat').appendChild(d);
+  $('chat').scrollTop = $('chat').scrollHeight;
+}
+
+async function sendAnswer() {
+  const text = $('answerBox').value.trim();
+  if (!text) return toast('Write or speak an answer first.');
+  if (S.listening) { try { recognizer.stop(); } catch (e) {} }
+
+  const btn = $('sendBtn');
+  btn.disabled = true; btn.textContent = 'Scoring…';
+  addMsg('me', text);
+  $('answerBox').value = '';
+
+  try {
+    const body = S.answeringProbe
+      ? { answer: text, followup_answer: S.probeText }
+      : { answer: text };
+    const data = await api(`/api/sessions/${S.sessionId}/answer`, {
+      method: 'POST', body: JSON.stringify(body),
+    });
+
+    if (data.score) addScoreCard(data.score);
+
+    if (data.type === 'probe') {
+      S.answeringProbe = true;
+      S.probeText = data.probe;
+      $('answerHint').textContent = '— follow-up question. Answer briefly.';
+      setTimeout(() => addMsg('bot', data.probe, { speak: data.speak }), 320);
+    } else if (data.type === 'next') {
+      S.answeringProbe = false; S.probeText = null;
+      $('answerHint').textContent = '— speak or type. Think aloud.';
+      S.seq = data.next.seq;
+      updateProgress(S.seq);
+      setTimeout(() => {
+        if (data.why_selected && data.why_selected.weak_area_match >= 0.5) {
+          addBanner('This question targets a topic you scored low on previously.', '');
+        }
+        addMsg('bot', data.next.text, { speak: data.next.speak });
+        $('answerBox').focus();
+      }, 420);
+    } else if (data.type === 'report') {
+      setTimeout(() => renderReport(data.report), 380);
+    }
+  } catch (e) {
+    toast(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send answer';
+  }
+}
+
+async function getHint() {
+  try {
+    const data = await api(`/api/sessions/${S.sessionId}/hint`, { method: 'POST' });
+    addBanner(`💡 <b>Hint:</b> ${esc(data.hint)}`);
+    if (data.peer_advice && data.peer_advice.length) {
+      addBanner(`📣 <b>Peer advice:</b> “${esc(data.peer_advice[0])}”`);
+    }
+  } catch (e) { toast(e.message); }
+}
+
+async function skipQuestion() {
+  try {
+    const data = await api(`/api/sessions/${S.sessionId}/skip`, { method: 'POST' });
+    if (data.type === 'report') return renderReport(data.report);
+    addBanner('Question skipped — not counted.', 'warn');
+    S.answeringProbe = false; S.probeText = null;
+    S.seq = data.next.seq;
+    updateProgress(S.seq);
+    addMsg('bot', data.next.text, { speak: data.speak });
+  } catch (e) { toast(e.message); }
+}
+
+async function endInterview() {
+  if (!confirm('End the interview and see your report?')) return;
+  try {
+    const data = await api(`/api/sessions/${S.sessionId}/finish`, { method: 'POST' });
+    renderReport(data.report);
+  } catch (e) { toast(e.message); }
+}
+
+/* ============================================================
+   REPORT
+   ============================================================ */
+function renderReport(r) {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  $('interview').classList.add('hide');
+  $('report').classList.remove('hide');
+
+  const dims = r.dimensions || {};
+  const order = ['coverage', 'structure', 'specificity', 'depth', 'confidence'];
+  const prof = r.company_profile || {};
+
+  $('report').innerHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2>Session report — ${esc(r.company)} · ${esc(prettyRound(r.round))}</h2>
+          <p class="sub">${esc(r.student_name)} · ${r.turns} scored answer${r.turns === 1 ? '' : 's'}</p>
+        </div>
+        <div class="row">
+          <button class="ghost small" onclick="location.reload()">New session</button>
+        </div>
+      </div>
+      <div class="row" style="align-items:center;gap:20px;margin-top:6px">
+        <svg class="score-ring" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="#212c4d" stroke-width="3.4"/>
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="${BAND_COLOR(r.overall)}" stroke-width="3.4"
+            stroke-linecap="round" stroke-dasharray="${(r.overall / 10) * 97.4} 97.4"
+            transform="rotate(-90 18 18)"/>
+          <text x="18" y="20.8" text-anchor="middle" font-size="9.5" font-weight="800"
+            fill="#e8ecf8" font-family="sans-serif">${r.overall}</text>
+        </svg>
+        <div>
+          <b style="font-size:15px">${esc(r.band)}</b>
+          <div class="muted" style="font-size:12.5px">${esc(r.verdict)}</div>
+          <div class="muted" style="font-size:12px;margin-top:5px">
+            strongest: <b>${esc(r.strongest_dimension || '—')}</b> ·
+            weakest: <b>${esc(r.weakest_dimension || '—')}</b>
+          </div>
+        </div>
+      </div>
+      <div class="bars" style="margin-top:16px">
+        ${order.filter(k => dims[k] !== undefined).map(k => `
+          <div class="bar"><span>${k}</span>
+            <span class="track"><span class="fill" style="width:${dims[k] * 10}%"></span></span>
+            <span>${dims[k]}</span></div>`).join('')}
+      </div>
+      ${r.closing ? `<div class="banner" style="margin-top:14px">${esc(r.closing)}</div>` : ''}
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>What to fix next</h2>
+        <p class="sub">Generated from this session and your answer history.</p>
+        <ul class="list">${(r.next_actions || []).map(a => `<li>${esc(a)}</li>`).join('')}</ul>
+        ${(r.focus_plan || []).length ? `
+          <div style="margin-top:14px">
+            <div class="muted" style="font-size:11.5px;letter-spacing:.4px;margin-bottom:6px">FOCUS PLAN</div>
+            ${r.focus_plan.map(f => `
+              <div class="advice"><b>${esc(f.topic)}</b> (${f.avg_score}/10)<br>${esc(f.why)}</div>`).join('')}
+          </div>` : ''}
+      </div>
+
+      <div class="card">
+        <h2>Topic breakdown</h2>
+        <p class="sub">Averaged from your scored answers.</p>
+        ${(r.weak_topics || []).length ? `
+          <div class="muted" style="font-size:11.5px;margin-bottom:5px">WEAK</div>
+          ${r.weak_topics.map(t => `<div class="stat"><span>${esc(t.topic)}</span><b style="color:var(--bad)">${t.score}/10</b></div>`).join('')}` : ''}
+        ${(r.strong_topics || []).length ? `
+          <div class="muted" style="font-size:11.5px;margin:12px 0 5px">STRONG</div>
+          ${r.strong_topics.map(t => `<div class="stat"><span>${esc(t.topic)}</span><b style="color:var(--good)">${t.score}/10</b></div>`).join('')}` : ''}
+        ${!(r.weak_topics || []).length && !(r.strong_topics || []).length ? '<span class="muted">Not enough data yet.</span>' : ''}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Answer by answer</h2>
+      <p class="sub">Every question, your answer, and what to change.</p>
+      ${(r.per_turn || []).map(t => `
+        <div style="border-top:1px solid var(--line);padding:13px 0">
+          <div class="row" style="justify-content:space-between">
+            <b style="font-size:13px">Q${t.seq}. ${esc(t.question)}</b>
+            <b style="color:${BAND_COLOR(t.overall)}">${t.overall}/10</b>
+          </div>
+          <div class="muted" style="font-size:12.4px;margin:6px 0">Your answer: ${esc(t.answer)}</div>
+          <ul class="list">${(t.improvements || []).map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+        </div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Company intel used for this session</h2>
+      <p class="sub">${prof.review_count || 0} reviews mined · felt difficulty ${prof.avg_difficulty_felt ?? '—'}/5</p>
+      <div class="chips">
+        ${(prof.hot_topics || []).slice(0, 9).map(h => `<span class="chip static">${esc(h.topic)} · ${h.mentions}</span>`).join('')}
+      </div>
+      ${(prof.advice || []).length ? `
+        <div style="margin-top:12px">
+          ${prof.advice.map(a => `<div class="advice">“${esc(a)}”</div>`).join('')}
+        </div>` : ''}
+      <div class="banner" style="margin-top:13px;font-size:12px">
+        <b>The loop continues:</b> add a review for ${esc(r.company)} and the next student's mock will be weighted differently.
+      </div>
+    </div>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  speak(r.closing);
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+(async function boot() {
+  initVoice();
+  $('voicePill').innerHTML = `<span class="dot ${voiceSupported() ? '' : 'off'}"></span> voice ${voiceSupported() ? 'ready' : 'unsupported'}`;
+
+  try {
+    const h = await api('/api/health');
+    $('enginePill').innerHTML = `<span class="dot ${h.llm.mode === 'llm' ? '' : 'off'}"></span> ${h.llm.mode === 'llm' ? esc(h.llm.model) : 'offline rubric engine'}`;
+    $('modeNote').textContent = h.llm.mode === 'llm'
+      ? 'LLM enabled: generative follow-ups and richer coaching.'
+      : 'Running offline with a deterministic rubric engine — no API key needed. Set OPENAI_API_KEY to upgrade feedback.';
+  } catch (e) { /* health is optional */ }
+
+  $('voiceToggle').onclick = toggleVoiceMode;
+  $('startBtn').onclick = startInterview;
+  $('sendBtn').onclick = sendAnswer;
+  $('micBtn').onclick = toggleMic;
+  $('hintBtn').onclick = getHint;
+  $('skipBtn').onclick = skipQuestion;
+  $('endBtn').onclick = endInterview;
+  $('rvSubmit').onclick = submitReview;
+  $('rvDiff').dataset.value = 3;
+  $('rvRate').dataset.value = 4;
+  buildChips($('rvDiff'), 5, 3);
+  buildChips($('rvRate'), 5, 4);
+
+  $('answerBox').addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); sendAnswer(); }
+  });
+  $('roundSel').addEventListener('change', () => {
+    if (S.company) loadProfile(S.company.name, $('roundSel').value);
+  });
+
+  try { await loadCompanies(); }
+  catch (e) { toast('Could not reach the API: ' + e.message); }
+})();
+</script>
+</body>
+</html>

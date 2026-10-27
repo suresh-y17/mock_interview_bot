@@ -1,0 +1,11 @@
+.git
+__pycache__
+*.pyc
+.venv
+venv
+*.db
+.env
+.env.*
+screenshot-*.png
+*.zip
+*.bundle

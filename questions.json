@@ -1,0 +1,961 @@
+{
+  "companies": [
+    {
+      "name": "TCS",
+      "type": "service",
+      "about": "Mass hiring via TCS NQT. Expect aptitude + technical + HR. Interviewers are usually friendly, focus on basics and willingness to relocate / work in any shift.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "hr"
+      ]
+    },
+    {
+      "name": "Infosys",
+      "type": "service",
+      "about": "Infosys online test + technical + HR. Heavy emphasis on projects, DBMS and OOP. Certification questions (Infosys Springboard) come up often.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "hr"
+      ]
+    },
+    {
+      "name": "Wipro",
+      "type": "service",
+      "about": "Wipro Elite NTH. Aptitude + coding (2 questions) + technical + HR. Panel often checks communication and bond/relocation comfort.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "hr"
+      ]
+    },
+    {
+      "name": "Cognizant",
+      "type": "service",
+      "about": "GenC / GenC Elevate. Aptitude + coding + technical + HR. Interviewers probe SQL joins and one language deeply.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "hr"
+      ]
+    },
+    {
+      "name": "Accenture",
+      "type": "service",
+      "about": "Cognitive + technical assessment, then a combined technical-cum-HR round. Behavioural questions (situation based) carry a lot of weight.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "hr",
+        "behavioral"
+      ]
+    },
+    {
+      "name": "Capgemini",
+      "type": "service",
+      "about": "Pseudo code + English communication test, then technical + HR. Pseudo-code reading is a distinct section.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "hr"
+      ]
+    },
+    {
+      "name": "Amazon",
+      "type": "product",
+      "about": "Online assessment (2 DSA) + 3-4 technical loops. Every round has 2 Leadership Principle questions. Expect deep follow-ups on trade-offs and complexity.",
+      "rounds": [
+        "dsa",
+        "system_design",
+        "behavioral",
+        "technical"
+      ]
+    },
+    {
+      "name": "Google",
+      "type": "product",
+      "about": "Phone screen + 4-5 onsite rounds. Pure problem solving and coding on a shared doc, plus Googleyness. No trivia - they want optimal complexity.",
+      "rounds": [
+        "dsa",
+        "system_design",
+        "behavioral"
+      ]
+    },
+    {
+      "name": "Microsoft",
+      "type": "product",
+      "about": "Codility test then 3-4 rounds. Mix of DSA, CS fundamentals (OS/DBMS) and behavioural. Strong focus on clarifying questions first.",
+      "rounds": [
+        "dsa",
+        "technical",
+        "system_design",
+        "behavioral"
+      ]
+    },
+    {
+      "name": "Flipkart",
+      "type": "product",
+      "about": "Machine coding + DSA + design + hiring manager. Machine coding round (working code in 90 min) is the filter.",
+      "rounds": [
+        "dsa",
+        "system_design",
+        "behavioral",
+        "technical"
+      ]
+    },
+    {
+      "name": "Zoho",
+      "type": "product",
+      "about": "Written aptitude + C/C++ coding on paper, then multiple technical rounds. Very fundamentals-heavy, low tolerance for vague answers.",
+      "rounds": [
+        "aptitude",
+        "technical",
+        "dsa",
+        "hr"
+      ]
+    },
+    {
+      "name": "Generic Fresher",
+      "type": "both",
+      "about": "A balanced fresher interview: technical fundamentals, one coding question, one HR/behavioural question. Use this when the company is not listed.",
+      "rounds": [
+        "technical",
+        "dsa",
+        "hr",
+        "behavioral"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "company": "TCS",
+      "round": "aptitude",
+      "text": "A train covers 240 km in 4 hours. If it increases its speed by 20 km/h, how long will it take to cover the same distance?",
+      "ideal": "Original speed is 60 km/h. New speed is 80 km/h. Time = 240/80 = 3 hours. State the steps and the final answer clearly.",
+      "tags": [
+        "speed",
+        "time",
+        "distance",
+        "quantitative"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "TCS",
+      "round": "technical",
+      "text": "Explain the difference between a primary key and a unique key in SQL.",
+      "ideal": "A primary key uniquely identifies each row and cannot be NULL; a table has only one primary key. A unique key also enforces uniqueness but allows one NULL and a table may have several. Example: employee_id as primary key, email as unique key.",
+      "tags": [
+        "sql",
+        "dbms",
+        "keys",
+        "constraints"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "TCS",
+      "round": "technical",
+      "text": "What is the difference between method overloading and method overriding?",
+      "ideal": "Overloading is compile-time polymorphism: same method name, different parameter list, in the same class. Overriding is runtime polymorphism: a subclass redefines a superclass method with the same signature, resolved via dynamic dispatch.",
+      "tags": [
+        "oop",
+        "polymorphism",
+        "java",
+        "c++"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "TCS",
+      "round": "hr",
+      "text": "Are you comfortable relocating to any city or working in rotational shifts?",
+      "ideal": "Give a clear yes/specific condition, then a reason. 'Yes, I am open to relocating anywhere in India; I have already discussed it with my family. I have lived in a hostel for four years so adjusting to a new city is not a problem.' Avoid a vague 'I can manage'.",
+      "tags": [
+        "relocation",
+        "flexibility",
+        "shift",
+        "commitment"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": "TCS",
+      "round": "hr",
+      "text": "Why do you want to join TCS when you could join a startup?",
+      "ideal": "Show research and a concrete reason: structured training (Initial Learning Program), scale of projects, exposure to multiple domains. Tie it to your own goal, e.g. wanting a strong foundation in enterprise software delivery. Do not say 'because TCS is a big company'.",
+      "tags": [
+        "why-company",
+        "motivation",
+        "research"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "TCS",
+      "round": "hr",
+      "text": "Tell me about yourself.",
+      "ideal": "30-60 second STRUCTURE: present state (degree, college, key skill), one proof point (project or internship with a result), then why this role. Avoid reciting your resume chronology or your family details.",
+      "tags": [
+        "intro",
+        "communication",
+        "structure"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": "Infosys",
+      "round": "technical",
+      "text": "Explain normalization. Why do we need 3NF?",
+      "ideal": "Normalization organizes tables to reduce redundancy and update anomalies. 1NF: atomic values. 2NF: no partial dependency on part of a composite key. 3NF: no transitive dependency of a non-key attribute on the key. Trade-off: more joins, so sometimes denormalize for read performance.",
+      "tags": [
+        "dbms",
+        "normalization",
+        "3nf",
+        "design"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Infosys",
+      "round": "technical",
+      "text": "What happens internally when you type a URL in the browser and press Enter?",
+      "ideal": "DNS resolution to get the IP, TCP handshake, TLS handshake for HTTPS, HTTP request to the server, server responds, browser parses HTML and fetches sub-resources, builds the DOM and renders. Mention DNS cache and CDN briefly.",
+      "tags": [
+        "networking",
+        "dns",
+        "http",
+        "browser"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Infosys",
+      "round": "technical",
+      "text": "Pick one project from your resume and explain your exact contribution.",
+      "ideal": "Name the project, the problem, your specific modules and the stack. Use 'I' not 'we'. Give one measurable outcome (users, latency, marks, accuracy) and one hard bug you fixed and how.",
+      "tags": [
+        "project",
+        "resume",
+        "ownership",
+        "depth"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Infosys",
+      "round": "hr",
+      "text": "You are assigned a technology you have never worked on. What will you do in the first week?",
+      "ideal": "Concrete plan: read official documentation and a small tutorial, build a throwaway sample, find a mentor/teammate, ask for existing code to read, then take a small ticket. Show you are self-driven but also know when to ask for help.",
+      "tags": [
+        "learning",
+        "adaptability",
+        "situational"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Wipro",
+      "round": "technical",
+      "text": "Write the logic to reverse a string without using a built-in reverse function.",
+      "ideal": "Two-pointer swap: i=0, j=n-1, swap characters and move inward until i>=j. O(n) time, O(1) space for a mutable array; O(n) space if you build a new string. Say the complexity and one edge case (empty string, unicode).",
+      "tags": [
+        "coding",
+        "strings",
+        "two-pointer",
+        "complexity"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Wipro",
+      "round": "technical",
+      "text": "What is the difference between == and .equals() in Java?",
+      "ideal": "== compares references (memory addresses) for objects and values for primitives. .equals() compares content and can be overridden. String interning causes surprises: new String(\"a\") == \"a\" is false but .equals is true.",
+      "tags": [
+        "java",
+        "strings",
+        "equality",
+        "core"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Wipro",
+      "round": "hr",
+      "text": "Are you willing to sign a service agreement / bond?",
+      "ideal": "Answer honestly and directly, then show commitment reasoning. If yes say yes without hesitation - hesitation is what gets marked down. If no, say no politely with a reason.",
+      "tags": [
+        "bond",
+        "commitment",
+        "honesty"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": "Cognizant",
+      "round": "technical",
+      "text": "Write a SQL query to find the second highest salary from an Employee table.",
+      "ideal": "Options: SELECT MAX(salary) FROM Employee WHERE salary < (SELECT MAX(salary) FROM Employee); or use LIMIT/OFFSET; or DENSE_RANK() over salary. Mention NULL handling and duplicate salaries. Naming the trade-off is what earns marks.",
+      "tags": [
+        "sql",
+        "query",
+        "subquery",
+        "window-function"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Cognizant",
+      "round": "technical",
+      "text": "Explain the different types of JOINs with an example.",
+      "ideal": "INNER (matching rows only), LEFT (all left + matches), RIGHT, FULL OUTER, CROSS. Give a small students/courses example and say when you would use LEFT JOIN (e.g. find students with no course).",
+      "tags": [
+        "sql",
+        "joins",
+        "dbms"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Cognizant",
+      "round": "hr",
+      "text": "You and a teammate disagree on the approach to a task. What did you do?",
+      "ideal": "Use STAR. Situation, your task, the action (listened, wrote down both options, compared using a criterion like effort vs accuracy, escalated if needed), and the result. Show that you disagree on ideas, not on people.",
+      "tags": [
+        "teamwork",
+        "conflict",
+        "star",
+        "behavioural"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Accenture",
+      "round": "behavioral",
+      "text": "You realise two days before the deadline that you will miss it. What do you do?",
+      "ideal": "STAR-style and proactive: raise it immediately, quantify the gap, propose options (cut scope, add help, phased delivery), commit to a revised date you can meet. The interviewer is testing ownership and early escalation, not perfection.",
+      "tags": [
+        "situational",
+        "ownership",
+        "communication",
+        "deadline"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Accenture",
+      "round": "hr",
+      "text": "Where do you see yourself in five years?",
+      "ideal": "Show a growth path inside the role: strong individual contributor in 1-2 years, owning modules and mentoring juniors by year 3-4, moving toward technical leadership or domain expertise. Avoid 'doing MBA and leaving' or 'in your seat'.",
+      "tags": [
+        "career",
+        "ambition",
+        "retention"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": "Capgemini",
+      "round": "technical",
+      "text": "Read this pseudo-code and tell the output: set x = 5; while x > 0 { print x; x = x - 2 }",
+      "ideal": "Prints 5, 3, 1 then the loop ends because x becomes -1 which is not > 0. Explain the trace step by step and confirm the condition is checked before each iteration.",
+      "tags": [
+        "pseudo-code",
+        "loops",
+        "trace",
+        "logic"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Capgemini",
+      "round": "technical",
+      "text": "What is the difference between GET and POST?",
+      "ideal": "GET requests data in the URL, is idempotent, cacheable and length-limited; POST sends data in the body, is not idempotent and is used to create resources. Mention that GET is not secure for secrets because it lands in logs/history.",
+      "tags": [
+        "http",
+        "rest",
+        "web",
+        "api"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Amazon",
+      "round": "behavioral",
+      "text": "Tell me about a time you took ownership of something outside your responsibility.",
+      "ideal": "STAR + Leadership Principle 'Ownership'. Pick a real incident: what was broken or missing, why nobody was assigned to it, what you specifically did, the measurable outcome, and what you learned. Long-term thinking and 'never say it's not my job' should be visible.",
+      "tags": [
+        "star",
+        "ownership",
+        "leadership-principle",
+        "behavioural"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Amazon",
+      "round": "behavioral",
+      "text": "Describe a time you had to make a decision with incomplete data.",
+      "ideal": "Amazon LP: 'Bias for Action' and 'Dive Deep'. Show that you identified what data was missing, what risk was acceptable, what reversible decision you made, and how you validated it afterwards. Quantify the impact.",
+      "tags": [
+        "star",
+        "bias-for-action",
+        "decision",
+        "ambiguity"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Amazon",
+      "round": "behavioral",
+      "text": "Tell me about a time you disagreed with your manager or a senior. How did you handle it?",
+      "ideal": "LP: 'Have Backbone; Disagree and Commit'. Show that you raised the concern with data, listened, and if overruled committed fully rather than quietly disengaging. Do not tell a story where you were simply right and the manager was stupid.",
+      "tags": [
+        "star",
+        "backbone",
+        "conflict",
+        "leadership-principle"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Amazon",
+      "round": "dsa",
+      "text": "Given an array of integers and a target, return the indices of two numbers that add up to the target. Explain the optimal approach.",
+      "ideal": "Hash map from value to index, iterate once, for each element check if target - x is in the map. O(n) time, O(n) space. Mention the brute force O(n^2) first to show you can see the trade-off, then optimize. Confirm behaviour with duplicates and no-solution case.",
+      "tags": [
+        "hashing",
+        "arrays",
+        "two-sum",
+        "complexity"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Amazon",
+      "round": "dsa",
+      "text": "Find the maximum sum of any contiguous subarray of an array of integers.",
+      "ideal": "Kadane's algorithm: running sum = max(x, running + x), track global max. O(n) time, O(1) space. Explain why discarding a negative running sum is safe, and handle an all-negative array.",
+      "tags": [
+        "dp",
+        "kadane",
+        "arrays",
+        "complexity"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Amazon",
+      "round": "system_design",
+      "text": "Design a URL shortener like amzn.to. What are the key components?",
+      "ideal": "Clarify scale (reads vs writes), then: API layer, ID generation (base62 of a counter or hash), key-value store for mapping, cache for hot links, 301 vs 302 redirect choice, analytics pipeline, and collision handling. State the read-heavy caching strategy explicitly.",
+      "tags": [
+        "system-design",
+        "hld",
+        "hashing",
+        "caching",
+        "scale"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Amazon",
+      "round": "technical",
+      "text": "What is the difference between a process and a thread?",
+      "ideal": "A process has its own memory space; threads share the process's heap and code but have separate stacks and registers. Context switching between threads is cheaper. Mention races and locks, and that Python has the GIL as a real-world caveat.",
+      "tags": [
+        "os",
+        "process",
+        "thread",
+        "concurrency"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Google",
+      "round": "dsa",
+      "text": "Given a binary tree, return its level-order traversal.",
+      "ideal": "BFS with a queue; process one level at a time by recording the queue size before the inner loop. O(n) time, O(width) space. Mention DFS-with-depth as an alternative and why BFS is natural here.",
+      "tags": [
+        "trees",
+        "bfs",
+        "queue",
+        "traversal"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Google",
+      "round": "dsa",
+      "text": "You are given a stream of numbers. Design a structure that returns the median at any time.",
+      "ideal": "Two heaps: a max-heap for the lower half and a min-heap for the upper half, rebalanced so their sizes differ by at most one. Median is the top of the larger heap or the average of both tops. Insert O(log n), median O(1).",
+      "tags": [
+        "heaps",
+        "stream",
+        "median",
+        "design"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Google",
+      "round": "dsa",
+      "text": "Explain how you would find the longest substring without repeating characters.",
+      "ideal": "Sliding window with a map of last-seen index. Move the right pointer, on repeat jump the left pointer to max(left, last_seen+1). O(n) time, O(min(n, alphabet)) space. Trace a small example like 'abcabcbb'.",
+      "tags": [
+        "sliding-window",
+        "strings",
+        "hashmap",
+        "complexity"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Google",
+      "round": "system_design",
+      "text": "Design a rate limiter for an API.",
+      "ideal": "Clarify per-user vs global, and hard vs soft limits. Compare fixed window, sliding window log, token bucket (allows bursts) and leaky bucket. Token bucket in a Redis-like store with atomic increment is the usual answer. Discuss distributed edge cases and response code 429 + Retry-After.",
+      "tags": [
+        "system-design",
+        "rate-limiting",
+        "token-bucket",
+        "distributed"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Google",
+      "round": "behavioral",
+      "text": "Tell me about a technical project you are most proud of and what you would do differently.",
+      "ideal": "Pick one project with real depth, explain the hardest technical decision, then genuinely critique it (design debt, missing tests, scale limit) and say what you would change. Self-awareness is the scored trait here.",
+      "tags": [
+        "project",
+        "reflection",
+        "googleyness",
+        "depth"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Microsoft",
+      "round": "dsa",
+      "text": "Reverse a linked list. Which approach do you choose and why?",
+      "ideal": "Iterative with three pointers (prev, curr, next) is O(n) time and O(1) space. Recursive is O(n) stack space. Walk the pointer updates aloud and state the new head. Handle empty and single-node lists.",
+      "tags": [
+        "linked-list",
+        "pointers",
+        "iteration",
+        "complexity"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Microsoft",
+      "round": "technical",
+      "text": "What is the difference between a stack and a heap memory?",
+      "ideal": "Stack holds function frames and local values, is fast, LIFO and size-limited; heap holds dynamically allocated objects, is larger and freed by GC or manually. Mention that the stack is per-thread while the heap is shared.",
+      "tags": [
+        "os",
+        "memory",
+        "stack",
+        "heap"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Microsoft",
+      "round": "technical",
+      "text": "How does an index improve SQL query performance, and when can it hurt?",
+      "ideal": "An index is a B-tree keyed on the column, turning a full scan into a logarithmic lookup. It hurts writes (extra maintenance), consumes space, and is ignored for low-cardinality columns or when leading columns of a composite index are not used.",
+      "tags": [
+        "dbms",
+        "index",
+        "b-tree",
+        "performance"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Microsoft",
+      "round": "behavioral",
+      "text": "Describe a bug you shipped and how you found it.",
+      "ideal": "STAR with real debugging detail: the symptom, the hypothesis list, the tool you used (logs, debugger, bisect), the root cause, the fix, and the test or alert you added so it cannot recur. Owning the mistake scores higher than blaming.",
+      "tags": [
+        "star",
+        "debugging",
+        "ownership",
+        "learning"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Flipkart",
+      "round": "dsa",
+      "text": "Design an LRU cache with get and put in O(1).",
+      "ideal": "Hash map from key to node plus a doubly linked list for recency order. get moves the node to the front; put evicts the tail when capacity is exceeded. Explain each operation's O(1) guarantee and the eviction boundary case.",
+      "tags": [
+        "design",
+        "lru",
+        "hashmap",
+        "linked-list"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Flipkart",
+      "round": "system_design",
+      "text": "How would you design the inventory system for a flash sale?",
+      "ideal": "Clarify oversell tolerance first. Then: pre-warm inventory in a fast store, atomic decrement or reservation with TTL, queue-based order intake, idempotency keys, and a reconciliation job. Discuss contention, locking vs optimistic concurrency, and graceful 'sold out' UX.",
+      "tags": [
+        "system-design",
+        "inventory",
+        "concurrency",
+        "e-commerce"
+      ],
+      "difficulty": 5
+    },
+    {
+      "company": "Flipkart",
+      "round": "technical",
+      "text": "What is idempotency and why does it matter in payments?",
+      "ideal": "An operation that gives the same result when repeated. In payments, retries with an idempotency key prevent double debits. Explain the server-side unique key + stored response pattern.",
+      "tags": [
+        "api",
+        "idempotency",
+        "payments",
+        "reliability"
+      ],
+      "difficulty": 4
+    },
+    {
+      "company": "Flipkart",
+      "round": "behavioral",
+      "text": "Tell me about a time you had to learn something very fast to finish a task.",
+      "ideal": "STAR, but emphasise method: what you read, what you skipped, how you validated understanding with a small prototype, and the deadline you met. Name the specific resource you used.",
+      "tags": [
+        "star",
+        "learning",
+        "velocity",
+        "ownership"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Zoho",
+      "round": "technical",
+      "text": "What is the difference between a structure and a union in C?",
+      "ideal": "A struct allocates space for all members simultaneously; a union allocates space for the largest member and members share it. Struct size is roughly the sum with padding; union size is the max member. Unions are for memory reuse and type punning.",
+      "tags": [
+        "c",
+        "struct",
+        "union",
+        "memory"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Zoho",
+      "round": "technical",
+      "text": "Explain pointer arithmetic with an example.",
+      "ideal": "Incrementing a pointer moves it by sizeof(type) bytes; subtracting two pointers of the same array yields the element count. Show int *p; p+1 advances 4 bytes. Mention that void* arithmetic is illegal and out-of-bounds arithmetic is undefined behaviour.",
+      "tags": [
+        "c",
+        "pointers",
+        "memory",
+        "undefined-behaviour"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Zoho",
+      "round": "dsa",
+      "text": "Check whether a given string is a palindrome, ignoring case and spaces.",
+      "ideal": "Two pointers from both ends, skipping non-alphanumerics, compare lowercase characters. O(n) time, O(1) space. Say why you avoid building a cleaned copy of the string.",
+      "tags": [
+        "strings",
+        "two-pointer",
+        "coding",
+        "edge-cases"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Zoho",
+      "round": "hr",
+      "text": "You were not selected in a previous interview. What did you change afterwards?",
+      "ideal": "Be honest and specific about the gap (e.g. 'I froze on recursion') and name the concrete action and proof of improvement (50 problems solved, a project rewritten). Shows coachability, which Zoho weights heavily.",
+      "tags": [
+        "self-awareness",
+        "coachability",
+        "honesty"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "technical",
+      "text": "Explain the four pillars of object-oriented programming with one example each.",
+      "ideal": "Encapsulation (private fields + getters), Abstraction (interface hiding detail), Inheritance (Dog extends Animal), Polymorphism (same call, different behaviour - overloading/overriding). Use one running example like a Payment class across the four pillars.",
+      "tags": [
+        "oop",
+        "fundamentals",
+        "java",
+        "abstraction"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "technical",
+      "text": "What is the difference between a list and a tuple in Python, and when would you use each?",
+      "ideal": "Lists are mutable, tuples immutable. Tuples are hashable so they can be dict keys, slightly faster and signal intent. Use tuples for fixed records (coordinates) and lists for collections that change.",
+      "tags": [
+        "python",
+        "data-structures",
+        "immutability"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "technical",
+      "text": "Explain the difference between TCP and UDP.",
+      "ideal": "TCP is connection-oriented, ordered, reliable, with congestion control; UDP is connectionless, unordered, unreliable but low latency. Examples: HTTP/file transfer on TCP, DNS/video/gaming on UDP.",
+      "tags": [
+        "networking",
+        "tcp",
+        "udp",
+        "fundamentals"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "technical",
+      "text": "What is a deadlock and how can you prevent it?",
+      "ideal": "Two or more processes each hold a resource and wait for one held by another. Four conditions: mutual exclusion, hold and wait, no preemption, circular wait. Prevent by consistent lock ordering, timeouts, or a single global lock.",
+      "tags": [
+        "os",
+        "deadlock",
+        "concurrency",
+        "fundamentals"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "dsa",
+      "text": "How would you check if two strings are anagrams of each other?",
+      "ideal": "Count character frequencies in a hash map (or a 26-size array) for the first string, decrement for the second; all zeros means anagram. O(n) time. Mention the sort-and-compare alternative at O(n log n) and the length pre-check.",
+      "tags": [
+        "strings",
+        "hashmap",
+        "counting",
+        "complexity"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "dsa",
+      "text": "Write an algorithm to find the factorial of a number iteratively and recursively. Compare them.",
+      "ideal": "Iterative: multiply 1..n, O(n) time O(1) space. Recursive: n * fact(n-1) with base case n<=1, O(n) stack space. Mention integer overflow for large n and the case n=0 returning 1.",
+      "tags": [
+        "recursion",
+        "iteration",
+        "coding",
+        "overflow"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "dsa",
+      "text": "Given a sorted array, find the index of a target element efficiently.",
+      "ideal": "Binary search: low=0, high=n-1, mid=(low+high)//2, compare and halve the range. O(log n) time. Mention the sorted precondition and off-by-one care, and return -1 when not found.",
+      "tags": [
+        "binary-search",
+        "arrays",
+        "complexity",
+        "sorted"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "hr",
+      "text": "What is your biggest weakness?",
+      "ideal": "Pick a real, non-fatal weakness with the concrete step you are taking and evidence of progress. 'I used to go silent when stuck; now I timebox to 20 minutes then ask' beats 'I am a perfectionist'.",
+      "tags": [
+        "self-awareness",
+        "honesty",
+        "growth"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "hr",
+      "text": "Why should we hire you over other candidates with the same degree?",
+      "ideal": "One differentiator with proof: a shipped project, an internship outcome, an open-source contribution, a certification with a working demo. Then tie it to the role's needs. Never say 'I am hardworking'.",
+      "tags": [
+        "differentiation",
+        "value",
+        "proof"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "hr",
+      "text": "Do you have any questions for us?",
+      "ideal": "Always have two questions ready: one about the team/tech stack and one about what success looks like in the first six months. Avoid questions answered on the website or about salary in round one.",
+      "tags": [
+        "closing",
+        "curiosity",
+        "preparation"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "behavioral",
+      "text": "Tell me about a time you failed and what you learned.",
+      "ideal": "STAR with a genuine failure (not a humble-brag), your specific contribution to the failure, the fix, and a changed behaviour you can prove later. The learning must be verifiable, not 'I learned to be careful'.",
+      "tags": [
+        "star",
+        "failure",
+        "learning",
+        "self-awareness"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": "Generic Fresher",
+      "round": "behavioral",
+      "text": "Describe a time you worked in a team where someone was not contributing.",
+      "ideal": "STAR: what you observed, whether you spoke to them privately first, what you redistributed, whether you escalated, and the outcome. Show empathy plus delivery focus.",
+      "tags": [
+        "teamwork",
+        "conflict",
+        "star",
+        "delivery"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": null,
+      "round": "hr",
+      "text": "Walk me through your resume in 60 seconds.",
+      "ideal": "Chronological but selective: education, strongest technical skill with proof, one project or internship with a result, and a closing line on why this role. Do not list every subject you studied.",
+      "tags": [
+        "intro",
+        "resume",
+        "communication"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": null,
+      "round": "technical",
+      "text": "What is the difference between an abstract class and an interface?",
+      "ideal": "An abstract class can hold state and concrete methods and is extended once; an interface declares a contract, supports multiple implementation, and has no state (default methods aside). Choose an abstract class for shared code, an interface for capability.",
+      "tags": [
+        "oop",
+        "interfaces",
+        "abstraction",
+        "design"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": null,
+      "round": "hr",
+      "text": "How do you handle pressure or a very tight deadline?",
+      "ideal": "Give your actual method: prioritise by impact, break work into chunks, communicate status early, cut scope not quality. Back it with one short example. Vague answers like 'I stay calm' score poorly.",
+      "tags": [
+        "pressure",
+        "prioritisation",
+        "method"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": null,
+      "round": "behavioral",
+      "text": "Tell me about a time you had to convince someone to accept your idea.",
+      "ideal": "STAR with the resistance, the evidence you brought, how you adapted your argument to their concern, and the outcome. Listening to the objection is the part interviewers score.",
+      "tags": [
+        "star",
+        "persuasion",
+        "influence",
+        "communication"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": null,
+      "round": "aptitude",
+      "text": "A shopkeeper marks an item 40% above cost and then gives a 25% discount. What is his profit percentage?",
+      "ideal": "Let cost be 100. Marked price = 140. Selling price after 25% discount = 140 x 0.75 = 105. Profit = 5 on 100, so 5%. Show the base-100 shortcut explicitly - it avoids algebra errors.",
+      "tags": [
+        "aptitude",
+        "percentage",
+        "profit-loss"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": null,
+      "round": "aptitude",
+      "text": "If 6 workers can finish a task in 12 days, how many days will 9 workers take, working at the same rate?",
+      "ideal": "Work is constant: 6 x 12 = 72 worker-days. With 9 workers, 72/9 = 8 days. State the inverse proportion explicitly.",
+      "tags": [
+        "aptitude",
+        "time-work",
+        "ratio"
+      ],
+      "difficulty": 1
+    },
+    {
+      "company": null,
+      "round": "aptitude",
+      "text": "Complete the series: 2, 6, 12, 20, 30, ?",
+      "ideal": "Differences are 4, 6, 8, 10 - increasing by 2. Next difference is 12, so 30 + 12 = 42. Alternatively n(n+1): 6x7 = 42. Give the rule, not just the number.",
+      "tags": [
+        "aptitude",
+        "series",
+        "reasoning"
+      ],
+      "difficulty": 2
+    },
+    {
+      "company": null,
+      "round": "aptitude",
+      "text": "In a class of 40 students, 60% passed maths and 50% passed science. 25% passed both. How many failed both subjects?",
+      "ideal": "Passed at least one = 60 + 50 - 25 = 85%. Failed both = 15% of 40 = 6 students. Use inclusion-exclusion and state each step.",
+      "tags": [
+        "aptitude",
+        "sets",
+        "venn",
+        "percentage"
+      ],
+      "difficulty": 3
+    },
+    {
+      "company": null,
+      "round": "aptitude",
+      "text": "A sum doubles in 8 years at simple interest. In how many years will it become four times itself?",
+      "ideal": "Doubling means SI = P in 8 years, so rate = 12.5% per year. For 4x, SI must be 3P, which takes 8 x 3 = 24 years. Emphasise that SI grows linearly.",
+      "tags": [
+        "aptitude",
+        "simple-interest",
+        "quantitative"
+      ],
+      "difficulty": 2
+    }
+  ]
+}

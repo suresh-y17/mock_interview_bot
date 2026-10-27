@@ -1,0 +1,209 @@
+[
+  {
+    "student_name": "Aarav",
+    "company": "TCS",
+    "round": "hr",
+    "difficulty_felt": 2,
+    "rating": 4,
+    "text": "Very friendly panel. They asked a lot about relocation and shift and whether I would sign the bond. No deep technical questions at all, mostly about my final year project.",
+    "days_ago": 40
+  },
+  {
+    "student_name": "Meera",
+    "company": "TCS",
+    "round": "technical",
+    "difficulty_felt": 3,
+    "rating": 3,
+    "text": "Asked me to write SQL query for second highest salary and then kept asking about joins. Also asked about primary key vs unique key. My advice: revise SQL properly.",
+    "days_ago": 22
+  },
+  {
+    "student_name": "Rohit",
+    "company": "TCS",
+    "round": "hr",
+    "difficulty_felt": 1,
+    "rating": 5,
+    "text": "Total 15 minutes. Tell me about yourself, why TCS, relocation, and if I know what TCS does. They really want to hear that you are okay with any location.",
+    "days_ago": 12
+  },
+  {
+    "student_name": "Sneha",
+    "company": "Infosys",
+    "round": "technical",
+    "difficulty_felt": 3,
+    "rating": 4,
+    "text": "70 percent of my interview was my project. They asked why I chose that database and made me explain the architecture on paper. Then normalization questions, 3NF specifically.",
+    "days_ago": 30
+  },
+  {
+    "student_name": "Karthik",
+    "company": "Infosys",
+    "round": "technical",
+    "difficulty_felt": 4,
+    "rating": 2,
+    "text": "Panel drilled me on OOP for 20 minutes - overloading vs overriding, abstract class vs interface, then asked about ACID properties. Felt underprepared on theory.",
+    "days_ago": 18
+  },
+  {
+    "student_name": "Divya",
+    "company": "Infosys",
+    "round": "hr",
+    "difficulty_felt": 2,
+    "rating": 4,
+    "text": "Standard HR round. They asked what I would do if given a technology I do not know. Also asked about my Infosys Springboard certification, so do mention it.",
+    "days_ago": 9
+  },
+  {
+    "student_name": "Imran",
+    "company": "Wipro",
+    "round": "technical",
+    "difficulty_felt": 2,
+    "rating": 4,
+    "text": "Asked me to reverse a string and check palindrome in Java. Also difference between == and equals. Pretty basic, they mainly checked if I could explain my code.",
+    "days_ago": 25
+  },
+  {
+    "student_name": "Priya",
+    "company": "Wipro",
+    "round": "hr",
+    "difficulty_felt": 1,
+    "rating": 3,
+    "text": "HR asked about the service agreement and relocation straight away. Be very clear and do not hesitate on the bond question, they mark you down for that.",
+    "days_ago": 15
+  },
+  {
+    "student_name": "Nikhil",
+    "company": "Cognizant",
+    "round": "technical",
+    "difficulty_felt": 3,
+    "rating": 4,
+    "text": "SQL heavy. Second highest salary, types of joins, then a question on when to use left join. They also asked me to pick one language and go deep.",
+    "days_ago": 20
+  },
+  {
+    "student_name": "Ananya",
+    "company": "Cognizant",
+    "round": "technical",
+    "difficulty_felt": 4,
+    "rating": 3,
+    "text": "Started from DBMS normalization and went into indexing. Asked why an index slows down inserts. I had read it but could not explain it well.",
+    "days_ago": 7
+  },
+  {
+    "student_name": "Vikram",
+    "company": "Accenture",
+    "round": "behavioral",
+    "difficulty_felt": 2,
+    "rating": 5,
+    "text": "Almost entirely situational questions - missed deadline, team conflict, disagreeing with a senior. They want STAR format, that is it. Prepare 5 stories and you are set.",
+    "days_ago": 35
+  },
+  {
+    "student_name": "Riya",
+    "company": "Accenture",
+    "round": "hr",
+    "difficulty_felt": 1,
+    "rating": 4,
+    "text": "Very conversational. Asked where I see myself in 5 years and about my hobbies. Very important to look confident and smile, they judge communication a lot.",
+    "days_ago": 11
+  },
+  {
+    "student_name": "Aditya",
+    "company": "Amazon",
+    "round": "behavioral",
+    "difficulty_felt": 5,
+    "rating": 4,
+    "text": "Every single round had two leadership principle questions. They dig for 4-5 follow ups on the same story - what exactly did YOU do, what was the metric. One story about ownership is not enough.",
+    "days_ago": 45
+  },
+  {
+    "student_name": "Pooja",
+    "company": "Amazon",
+    "round": "dsa",
+    "difficulty_felt": 4,
+    "rating": 5,
+    "text": "Two sum variant followed by a sliding window problem. They cared more about me stating complexity and edge cases than finishing the code. Always ask clarifying questions first.",
+    "days_ago": 28
+  },
+  {
+    "student_name": "Sameer",
+    "company": "Amazon",
+    "round": "system_design",
+    "difficulty_felt": 5,
+    "rating": 3,
+    "text": "Asked to design a URL shortener and then went very deep on how I generate the unique id and how I handle collisions. Also asked about caching and analytics. I underestimated this round.",
+    "days_ago": 14
+  },
+  {
+    "student_name": "Tanvi",
+    "company": "Google",
+    "round": "dsa",
+    "difficulty_felt": 5,
+    "rating": 4,
+    "text": "No small talk, straight to the problem. They gave a hint only after I was stuck for a while. Very focused on optimal complexity, brute force was not accepted.",
+    "days_ago": 50
+  },
+  {
+    "student_name": "Arjun",
+    "company": "Google",
+    "round": "system_design",
+    "difficulty_felt": 5,
+    "rating": 3,
+    "text": "Rate limiter design. They expected me to compare token bucket vs sliding window and talk about distributed state. Tough round, prepare properly.",
+    "days_ago": 16
+  },
+  {
+    "student_name": "Neha",
+    "company": "Microsoft",
+    "round": "dsa",
+    "difficulty_felt": 4,
+    "rating": 5,
+    "text": "Reverse linked list and a tree question. The interviewer was helpful and wanted me to think aloud. They also asked one OS question about process vs thread.",
+    "days_ago": 21
+  },
+  {
+    "student_name": "Harsh",
+    "company": "Microsoft",
+    "round": "technical",
+    "difficulty_felt": 3,
+    "rating": 4,
+    "text": "Indexing and stack vs heap were asked. Also a debugging story from my project. Be ready to admit a bug you shipped, they like honesty there.",
+    "days_ago": 6
+  },
+  {
+    "student_name": "Ishita",
+    "company": "Flipkart",
+    "round": "system_design",
+    "difficulty_felt": 5,
+    "rating": 3,
+    "text": "Flash sale inventory design. They kept pushing on how to avoid overselling. Concurrency and idempotency came up again and again.",
+    "days_ago": 19
+  },
+  {
+    "student_name": "Siddharth",
+    "company": "Zoho",
+    "round": "technical",
+    "difficulty_felt": 4,
+    "rating": 4,
+    "text": "C fundamentals and pointers. Nothing about frameworks. They also asked me why I was rejected somewhere before, so keep an honest answer ready.",
+    "days_ago": 24
+  },
+  {
+    "student_name": "Kavya",
+    "company": "Generic Fresher",
+    "round": "hr",
+    "difficulty_felt": 2,
+    "rating": 4,
+    "text": "Weakness, why should we hire you, and any questions for us. Having two good questions at the end changed the tone of the interview completely.",
+    "days_ago": 5
+  },
+  {
+    "student_name": "Rahul",
+    "company": "Generic Fresher",
+    "round": "technical",
+    "difficulty_felt": 3,
+    "rating": 3,
+    "text": "OOP four pillars, TCP vs UDP, and one binary search question. Mixed round, tested breadth over depth.",
+    "days_ago": 3
+  }
+]

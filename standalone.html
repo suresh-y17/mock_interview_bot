@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>InterviewLoop — Voice Mock Interviews</title>
+<style>
+  :root{
+    --bg:#080c17; --panel:#101728; --panel2:#0c1322; --line:#1d2842;
+    --text:#e8ecf8; --muted:#8494b8;
+    --good:#3ddc97; --warn:#ffb454; --bad:#ff6b81;
+    --accent:#5b8cff; --accent2:#8b5cf6;
+    --bot:#9db4ff; --you:#3ddc97;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:radial-gradient(1200px 700px at 50% -10%, #131d36 0%, var(--bg) 62%);
+    color:var(--text); font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px; margin:0 auto; padding:20px 18px 40px; min-height:100vh; display:flex; flex-direction:column}
+  .hide{display:none !important}
+
+  /* ---------- brand ---------- */
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:18px}
+  .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;font-weight:800;font-size:12px;color:#0a1020}
+  .brand h1{font-size:15px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .brand p{margin:0;font-size:11px;color:var(--muted)}
+
+  /* ---------- lobby ---------- */
+  #lobby{flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:10px 0}
+  .callstate{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:26px;font-weight:700}
+  .blurb{color:var(--muted);font-size:13.5px;max-width:430px;margin:10px auto 0;line-height:1.65}
+
+  .callbtn{
+    margin-top:26px; padding:16px 30px; border-radius:999px; border:0; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff;
+    font:600 15px/1 inherit; letter-spacing:.01em;
+    box-shadow:0 10px 30px rgba(91,140,255,.35), inset 0 1px 0 rgba(255,255,255,.2);
+    transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .callbtn:hover{transform:translateY(-1px); box-shadow:0 14px 38px rgba(91,140,255,.45)}
+  .callbtn:active{transform:translateY(0) scale(.985)}
+
+  details{margin-top:30px; width:100%; max-width:420px; text-align:left;
+    background:var(--panel); border:1px solid var(--line); border-radius:13px; padding:0 15px}
+  details[open]{padding-bottom:15px}
+  summary{cursor:pointer; padding:13px 0; font-size:12.5px; color:var(--muted); font-weight:600;
+    list-style:none; display:flex; justify-content:space-between; align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"⌄"; font-size:15px; transform:translateY(-2px); transition:transform .2s}
+  details[open] summary::after{transform:rotate(180deg) translateY(2px)}
+  .field{margin-bottom:11px}
+  .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted); margin-bottom:5px; font-weight:700}
+  select,input{width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--text);
+    border-radius:9px; padding:9px 11px; font:inherit; font-size:13.5px}
+  select:focus,input:focus{outline:2px solid rgba(91,140,255,.45); outline-offset:1px}
+  .two{display:flex; gap:10px}
+  .two > *{flex:1; min-width:0}
+
+  /* ---------- orb ---------- */
+  .orb{position:relative; width:190px; height:190px; display:grid; place-items:center}
+  .orb.sm{width:74px; height:74px}
+  .orb canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
+  .core{
+    width:104px;height:104px;border-radius:50%;
+    background:radial-gradient(circle at 34% 28%, #ffffff 0%, #cfd8ee 26%, #6d7ea8 62%, #2b3550 100%);
+    box-shadow:0 0 44px rgba(157,180,255,.35), inset 0 -10px 24px rgba(0,0,0,.45);
+    transition:background .4s ease, box-shadow .4s ease, transform .4s ease;
+  }
+  .orb.sm .core{width:40px;height:40px}
+  .orb[data-state="speaking"] .core{
+    background:radial-gradient(circle at 34% 28%, #ffffff 0%, #b9f5d8 22%, #3ddc97 60%, #106b47 100%);
+    box-shadow:0 0 60px rgba(61,220,151,.5), inset 0 -10px 24px rgba(0,0,0,.4);
+    animation:breathe 1.5s ease-in-out infinite;
+  }
+  .orb[data-state="listening"] .core{
+    background:radial-gradient(circle at 34% 28%, #ffffff 0%, #ffd3da 22%, #ff6b81 60%, #8a1f30 100%);
+    box-shadow:0 0 60px rgba(255,107,129,.5), inset 0 -10px 24px rgba(0,0,0,.4);
+    animation:breathe 2.6s ease-in-out infinite;
+  }
+  .orb[data-state="thinking"] .core{
+    background:radial-gradient(circle at 34% 28%, #ffffff 0%, #ffe3b8 22%, #ffb454 60%, #8a5410 100%);
+    box-shadow:0 0 52px rgba(255,180,84,.45), inset 0 -10px 24px rgba(0,0,0,.4);
+    animation:spinpulse 1.1s ease-in-out infinite;
+  }
+  .orb[data-state="idle"] .core{animation:breathe 5s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes spinpulse{0%,100%{transform:scale(.95);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+
+  /* ---------- interview: the conversation ---------- */
+  #stage{flex:1; display:flex; flex-direction:column; min-height:0}
+  .topline{display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--muted);
+    padding-bottom:11px; border-bottom:1px solid var(--line); margin-bottom:4px}
+  .topline b{color:var(--text); font-weight:600}
+  .dots{display:flex; gap:3px; margin-left:auto}
+  .dots i{width:6px;height:6px;border-radius:50%;background:var(--line);display:block}
+  .dots i.on{background:var(--accent)}
+  .dots i.now{background:var(--good)}
+
+  .thread{
+    flex:1; overflow-y:auto; padding:18px 2px 8px; display:flex; flex-direction:column; gap:11px;
+    scroll-behavior:smooth; min-height:0;
+  }
+  .thread::-webkit-scrollbar{width:6px}
+  .thread::-webkit-scrollbar-thumb{background:#1c2740; border-radius:3px}
+
+  .b{max-width:86%; padding:11px 14px; border-radius:15px; font-size:14.5px; line-height:1.62;
+     animation:rise .32s cubic-bezier(.2,.8,.3,1)}
+  @keyframes rise{from{opacity:0; transform:translateY(9px)} to{opacity:1; transform:none}}
+
+  .b.bot{
+    align-self:flex-start; background:linear-gradient(180deg,#141d33,#111a2c);
+    border:1px solid var(--line); border-left:2px solid var(--bot);
+    border-bottom-left-radius:5px; color:#eef2ff;
+  }
+  .b.you{
+    align-self:flex-end; background:linear-gradient(180deg,#0f2a22,#0d231d);
+    border:1px solid #1c4436; border-right:2px solid var(--you);
+    border-bottom-right-radius:5px; color:#e4fff3;
+  }
+  /* the in-progress utterance, styled as a live caption */
+  .b.live{
+    align-self:flex-end; background:rgba(61,220,151,.06); border:1px dashed #2a6b52;
+    border-radius:15px; color:#a9e8cc; font-style:italic; min-height:0;
+  }
+  .b.live:empty{display:none}
+  .b.sys{align-self:center; background:transparent; border:0; color:var(--muted);
+    font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; padding:2px}
+
+  .who{font-size:10px; letter-spacing:.13em; text-transform:uppercase; font-weight:800;
+    margin-bottom:5px; opacity:.62}
+  .b.bot .who{color:var(--bot)}
+  .b.you .who{color:var(--you)}
+
+  .score{display:block; text-align:right; margin-top:7px; font-size:11px;
+    font-weight:800; letter-spacing:.04em; opacity:.9}
+
+  /* docked status — ambient, not a control */
+  .dock{
+    display:flex; align-items:center; gap:13px; padding:12px 4px 2px;
+    border-top:1px solid var(--line); margin-top:6px;
+  }
+  .dock .orb{width:52px;height:52px;flex:0 0 52px}
+  .dock .orb .core{width:26px;height:26px;box-shadow:none;animation-duration:2.6s}
+  .docktxt{min-width:0}
+  .dockstate{font-size:11px; letter-spacing:.15em; text-transform:uppercase; font-weight:800; color:var(--muted)}
+  .dockhint{font-size:12px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .bars{display:flex; gap:2px; align-items:flex-end; height:22px; margin-left:auto; flex:0 0 auto}
+  .bars i{width:3px; border-radius:2px; background:var(--line); height:5px; transition:height .12s ease, background .2s}
+  .bars.act i{background:var(--good)}
+
+  /* ---------- report ---------- */
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:20px}
+  .report h2{margin:0 0 3px; font-size:19px; letter-spacing:-.3px}
+  .report h3{font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--muted);
+    margin:22px 0 9px; font-weight:800}
+  .report .sub{color:var(--muted); font-size:12.5px; margin:0}
+  .ringrow{display:flex; align-items:center; gap:16px; margin-top:14px}
+  .list{margin:6px 0 0; padding-left:17px; color:#c3cde4; font-size:13px; line-height:1.75}
+  .advice{background:var(--panel2); border-left:2px solid var(--accent); border-radius:0 9px 9px 0;
+    padding:9px 12px; margin-bottom:8px; font-size:12.6px; color:#c3cde4}
+  .turn{border-top:1px solid var(--line); padding-top:12px; margin-top:12px}
+  .banner{background:linear-gradient(135deg,rgba(91,140,255,.12),rgba(139,92,246,.1));
+    border:1px solid #2c3c66; border-radius:11px; padding:12px 14px; font-size:13.5px; margin-top:16px}
+  .again{display:inline-block; margin-top:16px; color:var(--accent); text-decoration:none;
+    font-size:13px; font-weight:600; border-bottom:1px solid rgba(91,140,255,.35); padding-bottom:1px}
+  .muted{color:var(--muted)}
+  .row{display:flex; gap:9px; align-items:center}
+  .foot{text-align:center; color:#4e5d80; font-size:10.5px; margin-top:22px; line-height:1.7}
+
+  .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+    background:#17213a; border:1px solid #2b3a5e; color:var(--text); padding:11px 16px;
+    border-radius:11px; font-size:13px; opacity:0; pointer-events:none; transition:.28s; z-index:99;
+    max-width:88vw; box-shadow:0 12px 34px rgba(0,0,0,.5)}
+  .toast.on{opacity:1; transform:translateX(-50%)}
+  .cap{border-radius:10px; padding:10px 13px; font-size:12.5px; margin-bottom:12px; line-height:1.6}
+  .cap.warn{background:rgba(255,180,84,.09); border:1px solid #4a3a1c; color:#f3d3a1}
+  .cap.bad{background:rgba(255,107,129,.09); border:1px solid #4c2230; color:#ffb3bf}
+
+  @media (max-width:620px){
+    .wrap{padding:14px 13px 30px}
+    .orb{width:150px;height:150px}
+    .core{width:84px;height:84px}
+    .b{max-width:92%; font-size:14px}
+    .callbtn{width:100%; padding:17px 22px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="logo">IL</div>
+    <div>
+      <h1>InterviewLoop</h1>
+      <p>A voice interviewer that talks with you</p>
+    </div>
+  </div>
+
+  <!-- ================= LOBBY ================= -->
+  <section id="lobby">
+    <div class="orb" id="lobbyOrb" data-state="idle"><canvas id="lobbyViz"></canvas><div class="core"></div></div>
+    <div class="callstate" id="callState">Ready when you are</div>
+    <p class="blurb" id="blurb">
+      Your interviewer will greet you, ask questions out loud, listen to your answers,
+      and reply — like a real conversation. Nothing to type. No buttons to press once you begin.
+    </p>
+
+    <button class="callbtn" id="startBtn">🎧 Start the interview</button>
+
+    <details id="opts">
+      <summary>Who are you interviewing with?</summary>
+      <div class="field">
+        <label for="studentName">Your name</label>
+        <input id="studentName" placeholder="e.g. Ananya" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="field">
+        <label for="companySel">Company</label>
+        <select id="companySel"></select>
+      </div>
+      <div class="two">
+        <div class="field">
+          <label for="roundSel">Round</label>
+          <select id="roundSel"></select>
+        </div>
+        <div class="field">
+          <label for="lenSel">Questions</label>
+          <select id="lenSel">
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="paceSel">How long a pause means "I'm done"</label>
+        <select id="paceSel">
+          <option value="2300">Relaxed — 2.3 seconds</option>
+          <option value="1700" selected>Normal — 1.7 seconds</option>
+          <option value="1200">Quick — 1.2 seconds</option>
+        </select>
+      </div>
+    </details>
+
+    <div id="capBanner" style="width:100%;max-width:420px"></div>
+    <p class="foot" id="lobbyFoot">Chrome or Edge recommended · your microphone is used only while you speak</p>
+  </section>
+
+  <!-- ================= INTERVIEW ================= -->
+  <section id="stage" class="hide">
+    <div class="topline">
+      <span id="ivMeta"></span>
+      <span class="dots" id="dots"></span>
+    </div>
+
+    <div class="thread" id="thread" aria-live="polite"></div>
+
+    <div class="dock">
+      <div class="orb sm" id="dockOrb" data-state="idle"><div class="core"></div></div>
+      <div class="docktxt">
+        <div class="dockstate" id="dockState">connecting</div>
+        <div class="dockhint" id="dockHint">Getting ready…</div>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </section>
+
+  <!-- ================= REPORT ================= -->
+  <section id="report" class="hide"></section>
+
+</div>
+
+<script>
+/* engine.js — scoring, review mining, ranking (inlined) */
+/**
+ * engine.js — the InterviewLoop engine, ported to plain JavaScript.
+ *
+ * This is a faithful port of app/scoring.py, app/feedback.py and app/engine.py
+ * so the app can run with NO server and NO network (see standalone.html).
+ * Keep the two in sync if you change scoring rules — the Python version is the
+ * source of truth for the production API, this one powers the offline demo.
+ *
+ * Everything below is deliberately dependency-free.
+ */
+
+/* ============================== text utils ============================== */
+
+const STOPWORDS = new Set(("a an the and or but if then than that this those these i me my we our you your " +
+  "he she it they them was were is are am be been being do does did doing have has had " +
+  "having will would should could can may might must not no nor so very too also just " +
+  "about after again all any as at before both by during each few for from further how " +
+  "into more most other out over same some such through to under until up what when where " +
+  "which while who whom why with would asked ask asking question questions interview " +
+  "interviewer panel round told tell said say says like really pretty totally got get " +
+  "went go came come one two three four five minute minutes time day days make made " +
+  "them there their they're we're i'm don't didn't it's he's she's very much lot lots " +
+  "know knew think thought want wanted need needed give gave take took").split(" "));
+
+function tokens(text) {
+  return (String(text).toLowerCase().match(/[a-z0-9+#\-']+/g) || [])
+    .filter(t => !STOPWORDS.has(t));
+}
+
+function keyConcepts(ideal, limit = 12) {
+  const out = [];
+  for (const t of tokens(ideal)) {
+    if (t.length > 2 && !out.includes(t)) out.push(t);
+  }
+  return out.slice(0, limit);
+}
+
+function conceptCoverage(answer, ideal) {
+  const concepts = keyConcepts(ideal);
+  if (!concepts.length) return 0;
+  const aTok = new Set(tokens(answer));
+  const aFlat = tokens(answer).join(" ");
+  let hits = 0;
+  for (const c of concepts) {
+    if (aTok.has(c) || aFlat.includes(c)) hits++;
+    else if (c.length >= 5 && [...aTok].some(t => t.startsWith(c.slice(0, 5)))) hits++;
+  }
+  return hits / concepts.length;
+}
+
+function lexicalOverlap(answer, ideal) {
+  const a = new Set(tokens(answer));
+  const i = new Set(tokens(ideal));
+  if (!i.size) return 0;
+  let hit = 0;
+  for (const t of a) if (i.has(t)) hit++;
+  return Math.min(1, hit / Math.max(1, Math.min(i.size, 14)));
+}
+
+/** Approximation of Python's difflib.SequenceMatcher.ratio() via LCS. */
+function lcsRatio(a, b) {
+  if (!a.length || !b.length) return 0;
+  const m = a.length, n = b.length;
+  let prev = new Array(n + 1).fill(0);
+  for (let i = 1; i <= m; i++) {
+    const cur = new Array(n + 1).fill(0);
+    for (let j = 1; j <= n; j++) {
+      cur[j] = a[i - 1] === b[j - 1] ? prev[j - 1] + 1 : Math.max(prev[j], cur[j - 1]);
+    }
+    prev = cur;
+  }
+  return (2 * prev[n]) / (m + n);
+}
+
+const REASON_RE = new RegExp(
+  "\\b(because|since|so that|so i|so my|the reason|due to|which means|my goal|therefore|" +
+  "hence|thus|as a result|supportive|comfortable with|that is why|for that reason)\\b", "i");
+const NUMBER_RE = new RegExp(
+  "\\b(\\d+|one|two|three|four|five|six|seven|eight|nine|ten|for example|for instance|" +
+  "such as|in my college|during my|last year|at my|in my hostel)\\b", "i");
+
+const STAR_MARKERS = ["situation", "task", "action", "result", "when i", "at that time",
+  "i decided", "i built", "i led", "so i", "as a result", "finally", "the outcome",
+  "we achieved", "i learned"];
+
+const STRUCTURE_MARKERS = ["first", "second", "third", "then", "next", "finally", "because",
+  "for example", "however", "on the other hand", "in short", "to summarise", "to summarize",
+  "in conclusion", "so that"];
+
+const HEDGES = ["maybe", "i think", "i guess", "not sure", "i don't know", "dont know",
+  "kind of", "sort of", "probably", "somewhat", "i believe", "umm", "uhh", "actually i",
+  "i'm not", "im not", "no idea", "not really"];
+
+const FILLERS = ["basically", "actually", "you know", "like i said", "stuff",
+  "things like that", "etc"];
+
+const TECH_TERMS = new Set(("o(n) o(1) o(log n) time complexity space complexity hash map hashmap array " +
+  "string pointer recursion iterative query index join primary key foreign key " +
+  "normalization class object interface inheritance polymorphism thread process " +
+  "memory cache api endpoint latency throughput scalable trade-off tradeoff " +
+  "buffer queue stack tree graph heap algorithm function variable parameter " +
+  "request response server client database table row column schema " +
+  "acid transaction commit rollback idempotent concurrency lock mutex").split(" "));
+
+const STORY_CUES = ["tell me about a time", "describe a time", "tell me about a situation",
+  "describe a situation", "give me an example", "have you ever", "how did you handle",
+  "share an experience", "tell me about an incident", "describe an incident",
+  "when was a time"];
+
+function questionKind(questionText) {
+  const q = String(questionText || "").toLowerCase();
+  return STORY_CUES.some(c => q.includes(c)) ? "story" : "direct";
+}
+
+function countMarkers(answer, markers) {
+  const low = answer.toLowerCase();
+  return markers.filter(m => low.includes(m)).length;
+}
+
+/* ============================== scoring ============================== */
+
+const WEIGHTS_TECHNICAL = { coverage: 0.40, specificity: 0.20, structure: 0.15, depth: 0.15, confidence: 0.10 };
+const WEIGHTS_BEHAVIOURAL = { coverage: 0.30, structure: 0.25, specificity: 0.20, depth: 0.15, confidence: 0.10 };
+
+function band(score) {
+  if (score >= 8.5) return ["Strong hire signal", "This would land well in a real interview."];
+  if (score >= 7.0) return ["Good", "Solid answer. A little more structure would make it memorable."];
+  if (score >= 5.5) return ["Borderline", "The idea is there but the delivery needs work."];
+  if (score >= 3.5) return ["Weak", "The interviewer would likely move on. Revisit the fundamentals here."];
+  return ["Needs work", "This needs rebuilding before you take a real interview."];
+}
+
+function scoreAnswer(answer, ideal, tags, roundName, difficulty, question) {
+  answer = String(answer || "").trim();
+  const words = answer ? answer.split(/\s+/) : [];
+  const n = words.length;
+  const low = answer.toLowerCase();
+
+  if (n === 0) {
+    return {
+      overall: 0, dimensions: { coverage: 0, structure: 0, specificity: 0, depth: 0, confidence: 0 },
+      flags: ["empty"], tags, strengths: [],
+      improvements: ["You did not answer. In a real interview, say what you do know and think aloud — silence is scored worse than an imperfect attempt."],
+      band: "No answer", verdict: "No answer recorded.", word_count: 0,
+    };
+  }
+
+  const behavioural = roundName === "hr" || roundName === "behavioral";
+  const kind = questionKind(question);
+
+  const starHits = countMarkers(answer, STAR_MARKERS);
+  const structHits = countMarkers(answer, STRUCTURE_MARKERS);
+
+  // ---- coverage
+  const concept = conceptCoverage(answer, ideal);
+  const lex = lexicalOverlap(answer, ideal);
+  const fuzz = lcsRatio(tokens(answer), tokens(ideal));
+  let wordCoverage = Math.min(10, (0.70 * concept + 0.20 * lex + 0.10 * fuzz) * 14);
+  if (n < 8) wordCoverage *= 0.5;
+  if (n >= 30 && structHits >= 1 && wordCoverage < 4) wordCoverage = 4;
+
+  let coverage;
+  if (behavioural && kind === "story") {
+    const numbersB = /\b\d+/.test(answer) ? 1 : 0;
+    const resultB = /\b(result|outcome|so we|which led|impact|reduced|increased|learned|finally)\b/.test(low) ? 1 : 0;
+    const ownership = /\bi (decided|built|led|fixed|proposed|owned|took|asked|changed)\b/.test(low) ? 1 : 0;
+    const story = Math.min(10, 2.5 + 1.3 * Math.min(starHits, 4) + 2.0 * numbersB + 2.0 * resultB + 1.5 * ownership);
+    coverage = round2(0.65 * story + 0.35 * wordCoverage);
+  } else if (behavioural) {
+    let direct = 0;
+    if (/^\s*(yes|no|definitely|absolutely|i am|i would|i have|i do|i will|i prefer|i believe)/.test(low)) direct = 1;
+    else if (/\b(yes|no|comfortable|willing|open to|ready to|i am not)\b/.test(low)) direct = 1;
+    const reason = REASON_RE.test(answer) ? 1 : 0;
+    const concrete = NUMBER_RE.test(answer) ? 1 : 0;
+    const fillerOnly = n < 12 ? 1 : 0;
+    const pos = Math.min(10, 2.0 + 2.6 * direct + 2.4 * reason + 2.4 * concrete - 2.0 * fillerOnly);
+    coverage = round2(0.86 * pos + 0.14 * wordCoverage);
+  } else {
+    coverage = wordCoverage;
+  }
+
+  // ---- structure
+  let structure;
+  if (behavioural && kind === "story") {
+    structure = Math.min(10, 3.0 + 1.6 * starHits + 1.1 * structHits);
+  } else if (behavioural) {
+    structure = Math.min(10, 6.0 + 1.1 * structHits + 1.0 * starHits);
+  } else {
+    const tradeoff = /\b(trade-?off|however|but |whereas|o\(|complexity|downside)\b/.test(low) ? 1 : 0;
+    structure = Math.min(10, 5.0 + 1.4 * structHits + 1.2 * starHits + 1.0 * tradeoff);
+  }
+
+  // ---- specificity
+  const numbers = (answer.match(/\b\d+(?:\.\d+)?\b/g) || []).length;
+  const tech = [...TECH_TERMS].filter(t => low.includes(t)).length;
+  const examples = /\b(for example|e\.g\.|such as|instance|say)\b/.test(low) ? 1 : 0;
+  const specificity = Math.min(10, 2.0 + 1.5 * numbers + 1.0 * Math.min(tech, 4) + 2.0 * examples);
+
+  // ---- depth
+  let idealLen, span;
+  if (behavioural && kind === "story") { idealLen = 70; span = 130; }
+  else if (behavioural) { idealLen = 45; span = 90; }
+  else { idealLen = 55; span = 110; }
+  let depth = 10 - Math.min(8, Math.abs(n - idealLen) / span * 6);
+  depth = Math.max(2, depth);
+
+  // ---- confidence
+  const hedges = countMarkers(answer, HEDGES);
+  const fillers = countMarkers(answer, FILLERS);
+  const confidence = Math.max(1, 10 - 2.2 * hedges - 1.2 * fillers);
+
+  const dims = {
+    coverage: round1(coverage), structure: round1(structure),
+    specificity: round1(specificity), depth: round1(depth), confidence: round1(confidence),
+  };
+  const weights = behavioural ? WEIGHTS_BEHAVIOURAL : WEIGHTS_TECHNICAL;
+  let overall = Object.keys(dims).reduce((s, k) => s + dims[k] * weights[k], 0);
+  if (difficulty >= 4) overall *= 0.95;
+  overall = round1(Math.max(0, Math.min(10, overall)));
+
+  // ---- narrative
+  const strengths = [], improvements = [];
+
+  if (behavioural && kind === "direct") {
+    if (dims.coverage >= 7) strengths.push("Clear position, a reason, and something concrete — exactly what this round scores.");
+    else improvements.push("Answer in three beats: your position ('Yes, I am'), your reason, and one concrete detail from your life.");
+  } else {
+    if (dims.coverage >= 7) strengths.push("You hit most of the concepts the interviewer was listening for.");
+    else if (dims.coverage <= 4) improvements.push("Key concepts were missing. Say the definition first, then one concrete example.");
+    else improvements.push("You touched the right idea but left out part of it — being complete is what separates a 6 from an 8.");
+  }
+
+  if (behavioural && kind === "story") {
+    if (starHits >= 3) strengths.push("Your answer had a clear Situation-Action-Result flow.");
+    else improvements.push("Use STAR explicitly: Situation (1 line), Task, the Actions *you* took, then the Result with a number.");
+  } else if (behavioural) {
+    if (!REASON_RE.test(answer)) improvements.push("Give your answer, then a reason. 'Yes, and here is why' is what makes it credible.");
+    else if (dims.specificity < 6) improvements.push("Back the reason with something concrete — a number, a city, a past experience.");
+    else strengths.push("Clear position with a reason — exactly what an HR round scores.");
+  } else {
+    if (dims.structure >= 7) strengths.push("Logical, easy-to-follow progression.");
+    else improvements.push("Structure the answer: definition, then how it works, then an example, then the trade-off.");
+  }
+
+  if (dims.specificity >= 7) strengths.push("Concrete details and technical vocabulary — interviewers can tell you have used this.");
+  else improvements.push("Add specifics: a number, a real example, or the exact term the interviewer expects.");
+
+  if (n < 25) improvements.push("Too short. Aim for 30-60 seconds; a one-line answer reads as unprepared.");
+  if (n > 260) improvements.push("Too long — you will lose the interviewer. Cut to the core and offer detail if asked.");
+  if (hedges >= 2) improvements.push("You hedged several times ('maybe', 'I think'). State your answer, then qualify it if needed.");
+  if (!strengths.length) strengths.push("You engaged with the question — that is the right instinct to build on.");
+
+  const flags = [];
+  if (dims.coverage <= 4) flags.push("missing_concepts");
+  if (n < 25) flags.push("too_short");
+  if (n > 260) flags.push("rambling");
+  if (hedges >= 2) flags.push("hedging");
+  if (dims.specificity <= 4) flags.push("no_specifics");
+  if (dims.structure <= 4) flags.push("no_structure");
+
+  const [bnd, verdict] = band(overall);
+  return {
+    overall, dimensions: dims, flags, tags, strengths: strengths.slice(0, 3),
+    improvements: improvements.slice(0, 3), band: bnd, verdict, word_count: n,
+  };
+}
+
+const round1 = x => Math.round(x * 10) / 10;
+const round2 = x => Math.round(x * 100) / 100;
+
+/* ======================= review mining (loop 1) ======================= */
+
+const TOPIC_SYNONYMS = {
+  "sql": ["sql", "query", "queries", "select", "database query"],
+  "joins": ["join", "joins", "left join", "inner join"],
+  "dbms": ["dbms", "database", "normalization", "normalisation", "normal form", "3nf", "2nf", "acid"],
+  "index": ["index", "indexing", "indexes", "b-tree", "btree"],
+  "oop": ["oop", "oops", "object oriented", "class", "inheritance", "polymorphism"],
+  "dsa": ["dsa", "algorithm", "algorithms", "coding", "code", "problem solving", "leetcode"],
+  "arrays": ["array", "arrays", "subarray", "sliding window"],
+  "strings": ["string", "strings", "palindrome", "anagram", "reverse a string"],
+  "linked-list": ["linked list", "linkedlist"],
+  "trees": ["tree", "binary tree", "bst", "traversal", "level order"],
+  "heaps": ["heap", "heaps", "median", "priority queue"],
+  "hashing": ["hash", "hashing", "hashmap", "hash map"],
+  "recursion": ["recursion", "recursive", "backtracking"],
+  "binary-search": ["binary search", "searching"],
+  "dp": ["dynamic programming", "kadane", "memoization"],
+  "system-design": ["system design", "design a", "hld", "lld", "scalability", "scaling"],
+  "caching": ["cache", "caching", "redis", "cdn"],
+  "concurrency": ["concurrency", "concurrent", "thread", "threads", "lock", "locking", "race condition"],
+  "os": ["os", "operating system", "process", "deadlock", "memory management", "stack vs heap"],
+  "networking": ["networking", "network", "tcp", "udp", "dns", "http", "url", "tls"],
+  "api": ["api", "rest", "endpoint", "idempotency", "idempotent", "microservice"],
+  "java": ["java", "jvm", "jre", "equals", "string pool"],
+  "python": ["python", "tuple", "list comprehension"],
+  "c": ["c language", "c programming", "struct", "union", "pointer arithmetic"],
+  "pointers": ["pointer", "pointers"],
+  "project": ["project", "projects", "final year project", "capstone", "resume project"],
+  "resume": ["resume", "cv"],
+  "intro": ["tell me about yourself", "introduce yourself", "introduction", "about yourself"],
+  "why-company": ["why tcs", "why infosys", "why wipro", "why our company", "why do you want to join"],
+  "relocation": ["relocate", "relocation", "any location", "another city", "shift", "rotational", "night shift"],
+  "bond": ["bond", "service agreement", "service bond", "contract"],
+  "star": ["star", "situation task action result", "situation", "situational"],
+  "behavioral": ["behavioural", "behavioral", "situational", "scenario"],
+  "conflict": ["conflict", "disagree", "disagreement", "argument", "teammate"],
+  "teamwork": ["teamwork", "team", "group", "collaboration"],
+  "leadership-principle": ["leadership principle", "leadership principles", "ownership", "customer obsession"],
+  "ownership": ["ownership", "own the", "responsibility", "not my job"],
+  "deadline": ["deadline", "tight deadline", "delay", "delayed", "pressure"],
+  "failure": ["fail", "failure", "failed", "mistake", "went wrong"],
+  "self-awareness": ["weakness", "strength", "improve", "feedback", "rejected", "not selected"],
+  "career": ["five years", "5 years", "career", "future", "growth", "promotion"],
+  "communication": ["communication", "english", "speak", "speaking", "confidence", "confident", "fluency"],
+  "pseudo-code": ["pseudo code", "pseudocode", "pseudo-code", "dry run", "trace"],
+  "aptitude": ["aptitude", "quantitative", "reasoning", "logical", "puzzle"],
+  "complexity": ["complexity", "time complexity", "space complexity", "big o"],
+  "edge-cases": ["edge case", "edge cases", "corner case"],
+  "core": ["core java", "fundamentals", "basics", "theory"],
+};
+
+function extractTopics(text) {
+  const low = " " + String(text).toLowerCase() + " ";
+  const found = new Set();
+  for (const [tag, phrases] of Object.entries(TOPIC_SYNONYMS)) {
+    for (const p of phrases) {
+      const esc = p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      if (new RegExp("(?<![a-z0-9])" + esc + "(?![a-z0-9])").test(low)) { found.add(tag); break; }
+    }
+  }
+  return found;
+}
+
+const ADVICE_MARKERS = ["my advice", "advice", "prepare", "revise", "be ready", "keep ready",
+  "important", "make sure", "do mention", "do not", "don't", "always", "must", "remember",
+  "practice", "focus on"];
+
+function recencyWeight(createdAt, halfLifeDays = 90) {
+  const t = new Date(createdAt).getTime();
+  if (isNaN(t)) return 1;
+  const ageDays = Math.max(0, (Date.now() - t) / 86400000);
+  return Math.pow(0.5, ageDays / halfLifeDays);
+}
+
+/** Mine reviews into a company profile. Mirrors feedback.company_profile(). */
+function companyProfile(state, company, roundName) {
+  let reviews = state.reviews.filter(r => r.company === company && (!roundName || r.round === roundName));
+  let blended = false;
+  if (roundName && reviews.length < 3) {
+    const wide = state.reviews.filter(r => r.company === company);
+    if (wide.length > reviews.length) { reviews = wide; blended = true; }
+  }
+
+  const topicScore = {}, advice = {}, diffs = [], ratings = [];
+  for (const r of reviews) {
+    const w = recencyWeight(r.created_at);
+    diffs.push([r.difficulty_felt, w]);
+    ratings.push([r.rating, w]);
+    for (const tag of extractTopics(r.text)) topicScore[tag] = (topicScore[tag] || 0) + w;
+    for (const sentence of r.text.split(/(?<=[.!?])\s+/)) {
+      const s = sentence.trim();
+      if (s.length < 15) continue;
+      if (ADVICE_MARKERS.some(m => s.toLowerCase().includes(m))) {
+        advice[s] = (advice[s] || 0) + 1;
+      }
+    }
+  }
+
+  const totalW = diffs.reduce((s, [, w]) => s + w, 0) || 1;
+  const felt = diffs.length ? round2(diffs.reduce((s, [d, w]) => s + d * w, 0) / totalW) : null;
+  const rating = ratings.length ? round2(ratings.reduce((s, [v, w]) => s + v * w, 0) / totalW) : null;
+
+  const hotTopics = Object.entries(topicScore)
+    .sort((a, b) => b[1] - a[1]).slice(0, 12)
+    .map(([topic, mentions]) => ({ topic, mentions: round2(mentions) }));
+
+  const covered = new Set();
+  for (const q of state.questions) {
+    if (q.company === company && (!roundName || q.round === roundName)) {
+      String(q.tags || "").split(",").filter(Boolean).forEach(t => covered.add(t));
+    }
+  }
+  const gaps = hotTopics.filter(h => !covered.has(h.topic)).slice(0, 5).map(h => h.topic);
+
+  const adviceList = Object.entries(advice).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([a]) => a);
+
+  return {
+    company, round: roundName || null, review_count: reviews.length, blended_company_wide: blended,
+    avg_difficulty_felt: felt, avg_rating: rating, hot_topics: hotTopics,
+    advice: adviceList, coverage_gaps: gaps, sample_quotes: reviews.slice(0, 3).map(r => r.text),
+  };
+}
+
+function topicWeights(state, company, roundName) {
+  const prof = companyProfile(state, company, roundName);
+  if (!prof.hot_topics.length) return {};
+  const top = prof.hot_topics[0].mentions || 1;
+  const out = {};
+  for (const h of prof.hot_topics) out[h.topic] = h.mentions / top;
+  return out;
+}
+
+/* ==================== student profile (loop 2) ==================== */
+
+function studentWeakTags(state, studentName, lastN = 5) {
+  const sessions = state.sessions.filter(s => s.student_name === studentName).slice(-lastN);
+  const totals = {}, counts = {};
+  for (const s of sessions) {
+    for (const t of s.turns) {
+      const tags = String(t.score.tags || "").split(",").filter(Boolean);
+      for (const tag of tags) {
+        totals[tag] = (totals[tag] || 0) + t.score.overall;
+        counts[tag] = (counts[tag] || 0) + 1;
+      }
+    }
+  }
+  const out = {};
+  for (const tag of Object.keys(totals)) out[tag] = round2(totals[tag] / counts[tag]);
+  return out;
+}
+
+const TOPIC_HINTS = {
+  "sql": "Write 10 queries by hand: joins, GROUP BY with HAVING, subqueries, window functions. Say the query aloud as you write it.",
+  "dbms": "Be able to draw 1NF -> 2NF -> 3NF on a whiteboard with a concrete table and name the anomaly each form removes.",
+  "joins": "Practise the LEFT JOIN 'find rows with no match' pattern — it is the most commonly asked follow-up.",
+  "index": "Explain the B-tree lookup and then immediately state the write cost and low-cardinality caveat.",
+  "oop": "Prepare one running example (e.g. Payment/PaymentMethod) and explain all four pillars through it.",
+  "dsa": "Solve 3 problems a day out loud. Always state brute force, then optimise, then complexity.",
+  "complexity": "For every answer, end with 'time is O(...) because ..., space is O(...) because ...'.",
+  "system-design": "Use a fixed skeleton: requirements -> scale estimate -> API -> data model -> components -> bottlenecks.",
+  "concurrency": "Learn lock ordering, atomic operations and optimistic vs pessimistic concurrency with one example each.",
+  "os": "Revise process vs thread, deadlock's four conditions, and stack vs heap with diagrams.",
+  "networking": "Trace a URL request end to end until you can do it in 60 seconds without notes.",
+  "project": "Rehearse a 90-second project pitch: problem, your exact modules, hardest bug, measurable result.",
+  "relocation": "Decide your honest answer now and say it in one confident sentence. Hesitation is what gets marked down.",
+  "bond": "Know your stance on the service agreement and state it without hedging.",
+  "star": "Write 5 STAR stories (conflict, failure, leadership, deadline, learning) with numbers, and reuse them.",
+  "behavioral": "Prepare stories, not adjectives. Every claim needs a specific incident behind it.",
+  "communication": "Record yourself answering 'tell me about yourself' and cut every filler word.",
+  "self-awareness": "Have a real weakness with the concrete action you took and the evidence it improved.",
+  "pseudo-code": "Practise dry-running loops on paper with a variable table — write each iteration down.",
+  "core": "Revise definitions until you can give a one-line answer plus a one-line example.",
+};
+
+function focusPlan(state, studentName) {
+  const weak = studentWeakTags(state, studentName);
+  const ordered = Object.entries(weak).sort((a, b) => a[1] - b[1]);
+  const plan = [], seen = new Set();
+  for (const [tag, sc] of ordered) {
+    if (sc >= 6.5 || seen.has(round1(sc))) continue;
+    seen.add(round1(sc));
+    if (plan.length >= 3) break;
+    plan.push({ topic: tag, avg_score: sc,
+      why: TOPIC_HINTS[tag] || "Revise the fundamentals and practise explaining this aloud in two minutes." });
+  }
+  return plan;
+}
+
+/* ======================== selection & adaptivity ======================== */
+
+function nextTargetDifficulty(historyScores, start = 2.5) {
+  if (!historyScores.length) return start;
+  const recent = historyScores.slice(-2);
+  const avg = recent.reduce((a, b) => a + b, 0) / recent.length;
+  if (avg >= 7.5) return Math.min(5, start + 1);
+  if (avg >= 5.5) return start;
+  return Math.max(1, start - 0.75);
+}
+
+function questionsFor(state, company, roundName) {
+  const own = state.questions.filter(q => q.company === company && q.round === roundName);
+  const generic = company !== "Generic Fresher"
+    ? state.questions.filter(q => q.company === "Generic Fresher" && q.round === roundName) : [];
+  const seen = new Set(), out = [];
+  for (const q of [...own, ...generic]) {
+    if (seen.has(q.text)) continue;
+    seen.add(q.text);
+    out.push({ ...q, is_generic: q.company === "Generic Fresher" });
+  }
+  return out;
+}
+
+function rankQuestions(state, questions, company, roundName, targetDifficulty, weakTags, askedIds) {
+  const tw = topicWeights(state, company, roundName);
+  const weak = weakTags || {};
+  const ranked = [];
+  for (const q of questions) {
+    if (askedIds && askedIds.has(q.id)) continue;
+    const tags = String(q.tags || "").split(",").filter(Boolean);
+    const reviewMatch = Math.max(0, ...tags.map(t => tw[t] || 0));
+    let weakMatch = 0;
+    if (Object.keys(weak).length) {
+      weakMatch = Math.max(0, ...tags.filter(t => weak[t] !== undefined).map(t => Math.max(0, (6 - weak[t]) / 6)));
+    }
+    const diffFit = Math.max(0, 1 - Math.abs(q.difficulty - targetDifficulty) / 3);
+    const freshness = 1 / (1 + (q.times_asked || 0));
+    const score = 0.45 * reviewMatch + 0.25 * weakMatch + 0.20 * diffFit + 0.10 * freshness;
+    ranked.push({ score, q, why: {
+      review_match: round2(reviewMatch), weak_area_match: round2(weakMatch),
+      difficulty_fit: round2(diffFit), freshness: round2(freshness) } });
+  }
+  ranked.sort((a, b) => b.score - a.score);
+  return ranked;
+}
+
+/* ========================== session summary ========================== */
+
+function dedupe(rows) {
+  const seen = {}, out = [];
+  for (const r of rows) {
+    const k = round1(r.score);
+    if (seen[k]) continue;
+    seen[k] = 1;
+    out.push(r);
+  }
+  return out;
+}
+
+function summariseSession(turns) {
+  if (!turns.length) return { overall: 0, dimensions: {}, band: "No answers", turns: 0, verdict: "" };
+
+  const dims = {};
+  for (const k of Object.keys(WEIGHTS_TECHNICAL)) {
+    dims[k] = round1(turns.reduce((s, t) => s + (t.score.dimensions[k] || 0), 0) / turns.length);
+  }
+  const overall = round1(turns.reduce((s, t) => s + t.score.overall, 0) / turns.length);
+  const [bnd, verdict] = band(overall);
+
+  const entries = Object.entries(dims).sort((a, b) => b[1] - a[1]);
+  const strongest = entries[0][0], weakest = entries[entries.length - 1][0];
+
+  const tagTotals = {};
+  for (const t of turns) {
+    for (const tag of String(t.score.tags || "").split(",").filter(Boolean)) {
+      (tagTotals[tag] = tagTotals[tag] || []).push(t.score.overall);
+    }
+  }
+  const tagAvgs = Object.entries(tagTotals)
+    .map(([t, v]) => [t, round1(v.reduce((a, b) => a + b, 0) / v.length)])
+    .sort((a, b) => a[1] - b[1]);
+
+  const weakTopics = dedupe(tagAvgs.filter(([, s]) => s < 6.5).map(([t, s]) => ({ topic: t, score: s }))).slice(0, 3);
+  const strongTopics = dedupe([...tagAvgs].reverse().filter(([, s]) => s >= 7).map(([t, s]) => ({ topic: t, score: s }))).slice(0, 3);
+
+  const nextActions = [];
+  const tips = {
+    coverage: "Build a one-page cheat sheet per topic: definition, mechanism, example, trade-off. Cover all four in every answer.",
+    structure: "Answer with a fixed template: what it is, how it works, an example, the trade-off. Rehearse it 5 times.",
+    specificity: "Attach a number or a named example to every claim. 'Improved latency from 800ms to 200ms' beats 'it was faster'.",
+    depth: "Time yourself: 45-75 seconds for technical, 90-120 seconds for behavioural. Cut anything that is not evidence.",
+    confidence: "Remove 'maybe', 'I think', 'sort of'. Say the answer, then add a condition if you must.",
+  };
+  if (tips[weakest]) nextActions.push(tips[weakest]);
+  const seenScores = new Set();
+  for (const [tag, sc] of tagAvgs) {
+    if (sc >= 6.5 || seenScores.has(round1(sc))) continue;
+    if (nextActions.filter(a => a.includes("Weak area")).length >= 2) break;
+    seenScores.add(round1(sc));
+    nextActions.push(`Weak area '${tag}' scored ${sc}/10 — do 3 short written answers on it before your next mock.`);
+  }
+  if (!nextActions.length) nextActions.push("Good baseline. Next session, attempt the same company at a harder difficulty.");
+
+  return {
+    overall, band: bnd, verdict, turns: turns.length, dimensions: dims,
+    strongest_dimension: strongest, weakest_dimension: weakest,
+    weak_topics: weakTopics, strong_topics: strongTopics,
+    per_turn: turns.map(t => ({
+      seq: t.seq, question: t.question, answer: t.answer,
+      overall: t.score.overall, verdict: t.score.verdict, improvements: t.score.improvements,
+    })),
+    next_actions: nextActions.slice(0, 4),
+  };
+}
+
+/* ============================ offline "LLM" ============================ */
+
+const ROUND_LABELS = {
+  aptitude: "aptitude", technical: "technical", hr: "HR",
+  behavioral: "behavioural", dsa: "DSA", system_design: "system design",
+};
+const roundLabel = r => ROUND_LABELS[String(r || "").toLowerCase()] || String(r || "").replace(/_/g, " ");
+
+const Offline = {
+  intro(company, roundName, studentName, n) {
+    return `Hi ${studentName}, thanks for joining. I will be running your ${roundLabel(roundName)} round for ${company} today — ${n} questions, and I would like you to think aloud. Take your time and answer in your own words.`;
+  },
+  coaching(score) {
+    return (score.improvements || []).slice(0, 2).join(" ");
+  },
+  probe(score) {
+    if (score.overall < 4.5) return null;
+    if (score.flags.includes("no_specifics")) return "Can you give me a concrete example where that mattered?";
+    if (score.flags.includes("missing_concepts")) return "What is the trade-off of that approach?";
+    if (score.dimensions.coverage >= 7.5) return "How would that change if you had to scale it ten times?";
+    return null;
+  },
+  hint(ideal) {
+    const first = String(ideal).split(".")[0];
+    return "Start with: " + first.split(/\s+/).slice(0, 12).join(" ") + "... (now complete it in your own words)";
+  },
+  closing(overall) {
+    let tail;
+    if (overall >= 7) tail = "That was a confident round — keep this level and work on the small details.";
+    else if (overall >= 5) tail = "You have the right instincts; structure and specificity are what to fix next.";
+    else tail = "You are early in preparation, which is fine. Fix the fundamentals topic by topic.";
+    return `That is the end of the round. ${tail}`;
+  },
+};
+
+</script>
+<script>
+/* local_api.js — server REST shape over local state */
+/**
+ * local_api.js — serves the server's REST shape from local state, in-browser.
+ *
+ * static/voice.html talks to `/api/...`. In the single-file offline edition there
+ * is no server, so this shim implements exactly the routes that page calls, on
+ * top of engine.js + localStorage. Same request paths, same response shapes, so
+ * the UI code is identical in both builds.
+ *
+ * Keep the response shapes in sync with app/main.py + app/engine.py.
+ */
+(function () {
+  'use strict';
+
+  const QUESTIONS_PER_ROUND = { aptitude: 3, technical: 4, dsa: 3, system_design: 3, hr: 4, behavioral: 3 };
+
+  const current = (state, id) => state.sessions.find(s => s.id === Number(id));
+  const questionById = (state, qid) => state.questions.find(q => q.id === qid);
+
+  function ask(q, index, total) {
+    return {
+      seq: index, of: total, question_id: q.id, text: q.text,
+      round: q.round, difficulty: q.difficulty, tags: q.tags,
+      speak: `Question ${index}. ${q.text}`,
+    };
+  }
+
+  function finish(state, s) {
+    const report = summariseSession(s.turns.map(t => ({
+      seq: t.seq, question: t.question, answer: t.answer, score: t.score,
+    })));
+    report.student_name = s.student_name;
+    report.company = s.company;
+    report.round = s.round;
+    report.focus_plan = focusPlan(state, s.student_name);
+    report.closing = Offline.closing(report.overall);
+    report.company_profile = companyProfile(state, s.company, s.round);
+    s.finished = true;
+    s.report = report;
+    return { type: 'report', report, speak: report.closing };
+  }
+
+  function advance(state, s, answeredId) {
+    const limit = s.total_questions;
+    if (s.turns.length >= limit) return finish(state, s);
+
+    const asked = new Set(s.turns.map(t => t.question_id));
+    if (answeredId) asked.add(answeredId);
+    const history = s.turns.map(t => t.score.overall);
+    const pool = questionsFor(state, s.company, s.round);
+    const ranked = rankQuestions(state, pool, s.company, s.round,
+      nextTargetDifficulty(history), studentWeakTags(state, s.student_name), asked);
+    if (!ranked.length) return finish(state, s);
+
+    const nxt = ranked[0];
+    s.current_qid = nxt.q.id;
+    return {
+      type: 'next',
+      next: ask(nxt.q, s.turns.length + 1, limit),
+      why_selected: nxt.why,
+    };
+  }
+
+  const routes = {
+    'GET /api/health'() {
+      return {
+        ok: true,
+        llm: { mode: 'offline', model: 'rule-based rubric engine (in-browser)',
+               note: 'Single-file edition: no server, no API key.' },
+        insights: {
+          questions: state.questions.length,
+          reviews: state.reviews.length,
+          sessions: state.sessions.length,
+          answers_scored: state.sessions.reduce((n, s) => n + s.turns.length, 0),
+        },
+      };
+    },
+
+    'GET /api/companies'() {
+      return {
+        companies: SEED_COMPANIES.map(c => {
+          const rv = state.reviews.filter(r => r.company === c.name);
+          const available = (c.rounds || []).filter(r =>
+            state.questions.some(q => q.company === c.name && q.round === r));
+          return {
+            name: c.name, type: c.type, about: c.about,
+            rounds: available.length ? available : c.rounds,
+            question_count: state.questions.filter(q => q.company === c.name).length,
+            review_count: rv.length,
+            avg_difficulty_felt: rv.length
+              ? Math.round(rv.reduce((a, r) => a + r.difficulty_felt, 0) / rv.length * 100) / 100
+              : null,
+            avg_rating: rv.length
+              ? Math.round(rv.reduce((a, r) => a + r.rating, 0) / rv.length * 100) / 100
+              : null,
+          };
+        }),
+      };
+    },
+
+    'POST /api/sessions'(body) {
+      const limit = body.limit || QUESTIONS_PER_ROUND[body.round] || 4;
+      const pool = questionsFor(state, body.company, body.round);
+      if (!pool.length) throw new Error(`No questions for ${body.company} / ${body.round}.`);
+
+      const weak = studentWeakTags(state, body.student_name);
+      const ranked = rankQuestions(state, pool, body.company, body.round,
+        2.5, weak, new Set());
+
+      state.sessionSeq = (state.sessionSeq || 0) + 1;
+      const sid = state.sessionSeq;
+      const s = {
+        id: sid, student_name: body.student_name, company: body.company,
+        round: body.round, created_at: new Date().toISOString(),
+        total_questions: limit, current_qid: ranked[0].q.id,
+        turns: [], finished: false, report: null,
+      };
+      state.sessions.push(s);
+      save();
+
+      return {
+        session_id: sid,
+        student_name: body.student_name,
+        company: body.company,
+        round: body.round,
+        total_questions: limit,
+        pool_size: pool.length,
+        profile: companyProfile(state, body.company, body.round),
+        weak_areas: weak,
+        intro: Offline.intro(body.company, body.round, body.student_name, limit),
+        llm: { mode: 'offline', model: 'in-browser rubric' },
+        first: ask(ranked[0].q, 1, limit),
+      };
+    },
+
+    'POST /api/sessions/:id/answer'(body, id) {
+      const s = current(state, id);
+      if (!s) throw new Error('Session not found');
+      const q = questionById(state, s.current_qid);
+      if (!q) throw new Error('Question not found');
+
+      const isFollowup = !!body.followup_answer;
+      const sc = scoreAnswer(body.answer || '', q.ideal, q.tags, s.round, q.difficulty, q.text);
+      sc.coaching = Offline.coaching(sc);
+      sc.is_followup = isFollowup;
+
+      if (isFollowup && s.turns.length) {
+        const prev = s.turns[s.turns.length - 1];
+        prev.score.probe_answer = body.answer;
+        prev.score.probe_score = sc.overall;
+        prev.score.probe_coaching = sc.coaching;
+      } else {
+        const probe = Offline.probe(sc);
+        s.turns.push({
+          seq: s.turns.length + 1, question_id: q.id, question: q.text,
+          answer: body.answer || '', score: sc,
+        });
+        q.times_asked = (q.times_asked || 0) + 1;
+        if (probe) {
+          save();
+          return { type: 'probe', seq: s.turns.length, of: s.total_questions, score: sc, probe };
+        }
+      }
+
+      const out = advance(state, s, q.id);
+      save();
+      return Object.assign({ score: sc }, out);
+    },
+
+    'POST /api/sessions/:id/skip'(body, id) {
+      const s = current(state, id);
+      if (!s) throw new Error('Session not found');
+      if (s.turns.length + 1 >= s.total_questions) { const r = finish(state, s); save(); return r; }
+      const out = advance(state, s, s.current_qid);
+      save();
+      return out;
+    },
+
+    'POST /api/sessions/:id/hint'(body, id) {
+      const s = current(state, id);
+      const q = questionById(state, s.current_qid);
+      return {
+        hint: Offline.hint(q.ideal),
+        peer_advice: companyProfile(state, s.company, s.round).advice,
+      };
+    },
+
+    'POST /api/sessions/:id/finish'(body, id) {
+      const s = current(state, id);
+      const out = finish(state, s);
+      save();
+      return out;
+    },
+
+    'GET /api/sessions/:id/report'(body, id) {
+      const s = current(state, id);
+      return s && s.report ? s.report : summariseSession(s ? s.turns : []);
+    },
+  };
+
+  /**
+   * Drop-in replacement for the fetch-based api() in voice.html.
+   * Signature matches: api(path, {method, body}) -> parsed JSON.
+   */
+  window.localApi = function (path, opts) {
+    opts = opts || {};
+    const method = (opts.method || 'GET').toUpperCase();
+    const body = typeof opts.body === 'string' ? JSON.parse(opts.body) : (opts.body || {});
+    const clean = String(path).split('?')[0];
+
+    for (const key of Object.keys(routes)) {
+      const [m, pattern] = key.split(' ');
+      if (m !== method) continue;
+      const paramNames = [];
+      const rx = new RegExp('^' + pattern.replace(/:(\w+)/g, (_, n) => {
+        paramNames.push(n); return '([^/]+)';
+      }) + '$');
+      const match = clean.match(rx);
+      if (match) {
+        const args = paramNames.map(n => decodeURIComponent(match[paramNames.indexOf(n) + 1]));
+        return Promise.resolve(routes[key](body, ...args));
+      }
+    }
+    return Promise.reject(new Error('No local route for ' + method + ' ' + clean));
+  };
+})();
+
+</script>
+<script>
+/* voice.js — hands-free turn engine (inlined) */
+/**
+ * voice.js — voice-first conversation engine.
+ *
+ * Goal: a hands-free interview. The bot SPEAKS the question, then automatically
+ * starts listening; when you stop talking, it submits your answer by itself and
+ * speaks the next question. You never touch the keyboard.
+ *
+ * Core problem this solves: echo. If the mic is open while the bot is talking,
+ * the browser transcribes the bot's own voice and you end up answering yourself.
+ * So the mic is hard-gated against synthesis (see the `speaking` flag).
+ *
+ * Dependency-free. Used by the server UI and inlined into standalone.html.
+ */
+(function () {
+  'use strict';
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const state = {
+    enabled: false,
+    speaking: false,
+    listening: false,
+    thinking: false,
+    wantListening: false,   // desired state — survives the engine's onend
+    finalText: '',
+    noSpeechRetries: 0,
+    autoSubmitDelay: 1700,  // ms of silence before auto-submitting
+  };
+
+  let rec = null;
+  let silenceTimer = null;
+  let restartTimer = null;
+  let voices = [];
+  let handlers = {
+    onState: function () {},
+    onTranscript: function () {},
+    onAutoSubmit: function () {},
+    onError: function () {},
+  };
+
+  /* ---------------------------------------------------------------- utils */
+
+  const emit = (s, detail) => { handlers.onState(s, detail); };
+
+  function loadVoices() {
+    try { voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; }
+    catch (e) { voices = []; }
+  }
+
+  function pickVoice() {
+    if (!voices.length) loadVoices();
+    if (!voices.length) return null;
+    const en = voices.filter(v => /^en(-|$)/i.test(v.lang));
+    const pool = en.length ? en : voices;
+    // Prefer an Indian English voice, then a named female voice, then anything.
+    return pool.find(v => /en[-_]in/i.test(v.lang))
+        || pool.find(v => /female|woman|zira|heera|neerja|samantha/i.test(v.name))
+        || pool[0];
+  }
+
+  function clearSilence() {
+    if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+  }
+
+  function armSilence() {
+    clearSilence();
+    silenceTimer = setTimeout(() => {
+      const text = state.finalText.trim();
+      if (text && !state.thinking) {
+        state.thinking = true;
+        stopListening();
+        emit('thinking');
+        handlers.onAutoSubmit(text);
+      }
+    }, state.autoSubmitDelay);
+  }
+
+  /* ---------------------------------------------------------------- speech */
+
+  function speak(text, done) {
+    const finish = () => {
+      state.speaking = false;
+      if (done) done();
+    };
+
+    if (!state.enabled || !window.speechSynthesis || !text) { finish(); return; }
+
+    // Echo guard: never have the mic open while the bot is talking.
+    stopListening();
+    state.speaking = true;
+    emit('speaking', text);
+
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(text).replace(/[*#`_]/g, ''));
+      const v = pickVoice();
+      if (v) u.voice = v;
+      u.lang = (v && v.lang) || 'en-IN';
+      u.rate = 0.97;
+      u.pitch = 1.02;
+      u.volume = 1;
+
+      let ended = false;
+      const once = () => { if (!ended) { ended = true; finish(); } };
+      u.onend = once;
+      u.onerror = once;
+
+      speechSynthesis.speak(u);
+
+      // Safety valve: some engines never fire onend (or fire it instantly when
+      // cancelled). Without this the conversation deadlocks with no mic and no
+      // speech. Estimate generously from text length.
+      const estimate = Math.min(30000, 2200 + String(text).length * 72);
+      setTimeout(once, estimate);
+    } catch (e) {
+      finish();
+    }
+  }
+
+  function buildRecognizer() {
+    if (!SR) return null;
+    const r = new SR();
+    r.continuous = true;
+    r.interimResults = true;
+    r.lang = 'en-IN';
+    r.maxAlternatives = 1;
+
+    r.onstart = () => {
+      state.listening = true;
+      emit('listening');
+    };
+
+    r.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) {
+          state.finalText += (state.finalText ? ' ' : '') + t.trim();
+          state.noSpeechRetries = 0;
+        } else {
+          interim += t;
+        }
+      }
+      const shown = (state.finalText + ' ' + interim).replace(/\s+/g, ' ').trim();
+      handlers.onTranscript(shown, !!interim);
+      // Every new word pushes the auto-submit timer back — that IS the
+      // "you stopped talking" detector.
+      armSilence();
+    };
+
+    r.onerror = (e) => {
+      const err = e.error;
+      if (err === 'no-speech' || err === 'aborted') {
+        // Harmless: the engine timed out, or we stopped it ourselves.
+        return;
+      }
+      if (err === 'not-allowed' || err === 'service-not-allowed') {
+        state.wantListening = false;
+        state.listening = false;
+        emit('idle');
+        handlers.onError({
+          code: 'mic-blocked',
+          message: 'Microphone blocked. Allow mic access for this site, then reload.',
+        });
+        return;
+      }
+      if (err === 'network') {
+        state.wantListening = false;
+        state.listening = false;
+        emit('idle');
+        handlers.onError({
+          code: 'network',
+          message: 'Speech recognition needs an internet connection (Chrome sends audio to its speech service).',
+        });
+        return;
+      }
+      handlers.onError({ code: err, message: 'Voice error: ' + err });
+    };
+
+    r.onend = () => {
+      state.listening = false;
+      if (state.speaking) { emit('speaking'); return; }   // echo guard
+      if (state.thinking) { emit('thinking'); return; }
+      if (state.wantListening) {
+        // The engine stops itself after ~60s of silence or on transient
+        // errors. Restart so a long think doesn't kill the session.
+        clearTimeout(restartTimer);
+        restartTimer = setTimeout(() => {
+          if (state.wantListening && !state.speaking) startListening();
+        }, 300);
+      } else {
+        emit('idle');
+      }
+    };
+
+    return r;
+  }
+
+  function startListening() {
+    if (!state.enabled) return;
+    if (!rec) rec = buildRecognizer();
+    if (!rec) {
+      handlers.onError({ code: 'unsupported', message: 'This browser has no speech recognition.' });
+      return;
+    }
+    if (state.speaking) return;                   // never listen over the bot
+    state.wantListening = true;
+    state.thinking = false;
+    try {
+      rec.start();
+    } catch (e) {
+      // start() throws if already running — that is fine, just re-emit state.
+      if (String(e && e.name) === 'InvalidStateError') emit('listening');
+    }
+  }
+
+  function stopListening() {
+    state.wantListening = false;
+    clearSilence();
+    clearTimeout(restartTimer);
+    if (rec) {
+      try { rec.stop(); } catch (e) { /* not running */ }
+    }
+    state.listening = false;
+  }
+
+  function stopSpeaking() {
+    if (window.speechSynthesis) {
+      try { speechSynthesis.cancel(); } catch (e) {}
+    }
+    state.speaking = false;
+    emit('idle');
+  }
+
+  /* ------------------------------------------------------------ public API */
+
+  const VoiceEngine = {
+    /** What this browser can actually do, for honest UI messaging. */
+    capabilities() {
+      return {
+        tts: 'speechSynthesis' in window,
+        stt: !!SR,
+        secure: !!window.isSecureContext,
+        fileProtocol: String(location.protocol) === 'file:',
+        works: !!(SR && 'speechSynthesis' in window),
+      };
+    },
+
+    init(h) {
+      Object.assign(handlers, h || {});
+      loadVoices();
+      if (window.speechSynthesis) speechSynthesis.onvoiceschanged = loadVoices;
+      return this;
+    },
+
+    get enabled() { return state.enabled; },
+    get speaking() { return state.speaking; },
+    get listening() { return state.listening; },
+    get thinking() { return state.thinking; },
+    get transcript() { return state.finalText; },
+
+    setAutoSubmitDelay(ms) { state.autoSubmitDelay = Math.max(600, ms | 0); },
+
+    enable(on) {
+      state.enabled = !!on;
+      if (!state.enabled) {
+        stopListening();
+        stopSpeaking();
+      }
+      return state.enabled;
+    },
+
+    /**
+     * The whole turn: speak the line, then open the mic automatically.
+     * This is what makes the conversation hands-free.
+     */
+    turn(text, opts) {
+      const listenAfter = !opts || opts.listenAfter !== false;
+      state.finalText = '';
+      state.thinking = false;
+      handlers.onTranscript('', false);
+      speak(text, () => {
+        if (!state.enabled) { emit('idle'); return; }
+        if (listenAfter) {
+          // Small gap so the tail of the bot's own voice can't leak into the mic.
+          setTimeout(() => startListening(), 420);
+        } else {
+          emit('idle');
+        }
+      });
+    },
+
+    /** Speak without opening the mic (used for sign-off). */
+    say(text) { this.turn(text, { listenAfter: false }); },
+
+    listen() { startListening(); },
+    stopListening,
+    stopSpeaking,
+
+    /** Manual "send now" — also cancels the silence timer. */
+    finishTurn() {
+      const text = state.finalText.trim();
+      clearSilence();
+      stopListening();
+      if (text) {
+        state.thinking = true;
+        emit('thinking');
+        handlers.onAutoSubmit(text);
+      }
+      return text;
+    },
+
+    reset() {
+      state.finalText = '';
+      state.thinking = false;
+      clearSilence();
+      handlers.onTranscript('', false);
+    },
+  };
+
+  window.VoiceEngine = VoiceEngine;
+})();
+
+</script>
+<script>
+/* ---- local data ---- */
+const QUESTIONS = [{"company": "TCS", "round": "aptitude", "text": "A train covers 240 km in 4 hours. If it increases its speed by 20 km/h, how long will it take to cover the same distance?", "ideal": "Original speed is 60 km/h. New speed is 80 km/h. Time = 240/80 = 3 hours. State the steps and the final answer clearly.", "tags": ["speed", "time", "distance", "quantitative"], "difficulty": 2}, {"company": "TCS", "round": "technical", "text": "Explain the difference between a primary key and a unique key in SQL.", "ideal": "A primary key uniquely identifies each row and cannot be NULL; a table has only one primary key. A unique key also enforces uniqueness but allows one NULL and a table may have several. Example: employee_id as primary key, email as unique key.", "tags": ["sql", "dbms", "keys", "constraints"], "difficulty": 2}, {"company": "TCS", "round": "technical", "text": "What is the difference between method overloading and method overriding?", "ideal": "Overloading is compile-time polymorphism: same method name, different parameter list, in the same class. Overriding is runtime polymorphism: a subclass redefines a superclass method with the same signature, resolved via dynamic dispatch.", "tags": ["oop", "polymorphism", "java", "c++"], "difficulty": 2}, {"company": "TCS", "round": "hr", "text": "Are you comfortable relocating to any city or working in rotational shifts?", "ideal": "Give a clear yes/specific condition, then a reason. 'Yes, I am open to relocating anywhere in India; I have already discussed it with my family. I have lived in a hostel for four years so adjusting to a new city is not a problem.' Avoid a vague 'I can manage'.", "tags": ["relocation", "flexibility", "shift", "commitment"], "difficulty": 1}, {"company": "TCS", "round": "hr", "text": "Why do you want to join TCS when you could join a startup?", "ideal": "Show research and a concrete reason: structured training (Initial Learning Program), scale of projects, exposure to multiple domains. Tie it to your own goal, e.g. wanting a strong foundation in enterprise software delivery. Do not say 'because TCS is a big company'.", "tags": ["why-company", "motivation", "research"], "difficulty": 2}, {"company": "TCS", "round": "hr", "text": "Tell me about yourself.", "ideal": "30-60 second STRUCTURE: present state (degree, college, key skill), one proof point (project or internship with a result), then why this role. Avoid reciting your resume chronology or your family details.", "tags": ["intro", "communication", "structure"], "difficulty": 1}, {"company": "Infosys", "round": "technical", "text": "Explain normalization. Why do we need 3NF?", "ideal": "Normalization organizes tables to reduce redundancy and update anomalies. 1NF: atomic values. 2NF: no partial dependency on part of a composite key. 3NF: no transitive dependency of a non-key attribute on the key. Trade-off: more joins, so sometimes denormalize for read performance.", "tags": ["dbms", "normalization", "3nf", "design"], "difficulty": 3}, {"company": "Infosys", "round": "technical", "text": "What happens internally when you type a URL in the browser and press Enter?", "ideal": "DNS resolution to get the IP, TCP handshake, TLS handshake for HTTPS, HTTP request to the server, server responds, browser parses HTML and fetches sub-resources, builds the DOM and renders. Mention DNS cache and CDN briefly.", "tags": ["networking", "dns", "http", "browser"], "difficulty": 3}, {"company": "Infosys", "round": "technical", "text": "Pick one project from your resume and explain your exact contribution.", "ideal": "Name the project, the problem, your specific modules and the stack. Use 'I' not 'we'. Give one measurable outcome (users, latency, marks, accuracy) and one hard bug you fixed and how.", "tags": ["project", "resume", "ownership", "depth"], "difficulty": 2}, {"company": "Infosys", "round": "hr", "text": "You are assigned a technology you have never worked on. What will you do in the first week?", "ideal": "Concrete plan: read official documentation and a small tutorial, build a throwaway sample, find a mentor/teammate, ask for existing code to read, then take a small ticket. Show you are self-driven but also know when to ask for help.", "tags": ["learning", "adaptability", "situational"], "difficulty": 2}, {"company": "Wipro", "round": "technical", "text": "Write the logic to reverse a string without using a built-in reverse function.", "ideal": "Two-pointer swap: i=0, j=n-1, swap characters and move inward until i>=j. O(n) time, O(1) space for a mutable array; O(n) space if you build a new string. Say the complexity and one edge case (empty string, unicode).", "tags": ["coding", "strings", "two-pointer", "complexity"], "difficulty": 2}, {"company": "Wipro", "round": "technical", "text": "What is the difference between == and .equals() in Java?", "ideal": "== compares references (memory addresses) for objects and values for primitives. .equals() compares content and can be overridden. String interning causes surprises: new String(\"a\") == \"a\" is false but .equals is true.", "tags": ["java", "strings", "equality", "core"], "difficulty": 2}, {"company": "Wipro", "round": "hr", "text": "Are you willing to sign a service agreement / bond?", "ideal": "Answer honestly and directly, then show commitment reasoning. If yes say yes without hesitation - hesitation is what gets marked down. If no, say no politely with a reason.", "tags": ["bond", "commitment", "honesty"], "difficulty": 1}, {"company": "Cognizant", "round": "technical", "text": "Write a SQL query to find the second highest salary from an Employee table.", "ideal": "Options: SELECT MAX(salary) FROM Employee WHERE salary < (SELECT MAX(salary) FROM Employee); or use LIMIT/OFFSET; or DENSE_RANK() over salary. Mention NULL handling and duplicate salaries. Naming the trade-off is what earns marks.", "tags": ["sql", "query", "subquery", "window-function"], "difficulty": 3}, {"company": "Cognizant", "round": "technical", "text": "Explain the different types of JOINs with an example.", "ideal": "INNER (matching rows only), LEFT (all left + matches), RIGHT, FULL OUTER, CROSS. Give a small students/courses example and say when you would use LEFT JOIN (e.g. find students with no course).", "tags": ["sql", "joins", "dbms"], "difficulty": 2}, {"company": "Cognizant", "round": "hr", "text": "You and a teammate disagree on the approach to a task. What did you do?", "ideal": "Use STAR. Situation, your task, the action (listened, wrote down both options, compared using a criterion like effort vs accuracy, escalated if needed), and the result. Show that you disagree on ideas, not on people.", "tags": ["teamwork", "conflict", "star", "behavioural"], "difficulty": 2}, {"company": "Accenture", "round": "behavioral", "text": "You realise two days before the deadline that you will miss it. What do you do?", "ideal": "STAR-style and proactive: raise it immediately, quantify the gap, propose options (cut scope, add help, phased delivery), commit to a revised date you can meet. The interviewer is testing ownership and early escalation, not perfection.", "tags": ["situational", "ownership", "communication", "deadline"], "difficulty": 2}, {"company": "Accenture", "round": "hr", "text": "Where do you see yourself in five years?", "ideal": "Show a growth path inside the role: strong individual contributor in 1-2 years, owning modules and mentoring juniors by year 3-4, moving toward technical leadership or domain expertise. Avoid 'doing MBA and leaving' or 'in your seat'.", "tags": ["career", "ambition", "retention"], "difficulty": 1}, {"company": "Capgemini", "round": "technical", "text": "Read this pseudo-code and tell the output: set x = 5; while x > 0 { print x; x = x - 2 }", "ideal": "Prints 5, 3, 1 then the loop ends because x becomes -1 which is not > 0. Explain the trace step by step and confirm the condition is checked before each iteration.", "tags": ["pseudo-code", "loops", "trace", "logic"], "difficulty": 2}, {"company": "Capgemini", "round": "technical", "text": "What is the difference between GET and POST?", "ideal": "GET requests data in the URL, is idempotent, cacheable and length-limited; POST sends data in the body, is not idempotent and is used to create resources. Mention that GET is not secure for secrets because it lands in logs/history.", "tags": ["http", "rest", "web", "api"], "difficulty": 2}, {"company": "Amazon", "round": "behavioral", "text": "Tell me about a time you took ownership of something outside your responsibility.", "ideal": "STAR + Leadership Principle 'Ownership'. Pick a real incident: what was broken or missing, why nobody was assigned to it, what you specifically did, the measurable outcome, and what you learned. Long-term thinking and 'never say it's not my job' should be visible.", "tags": ["star", "ownership", "leadership-principle", "behavioural"], "difficulty": 3}, {"company": "Amazon", "round": "behavioral", "text": "Describe a time you had to make a decision with incomplete data.", "ideal": "Amazon LP: 'Bias for Action' and 'Dive Deep'. Show that you identified what data was missing, what risk was acceptable, what reversible decision you made, and how you validated it afterwards. Quantify the impact.", "tags": ["star", "bias-for-action", "decision", "ambiguity"], "difficulty": 4}, {"company": "Amazon", "round": "behavioral", "text": "Tell me about a time you disagreed with your manager or a senior. How did you handle it?", "ideal": "LP: 'Have Backbone; Disagree and Commit'. Show that you raised the concern with data, listened, and if overruled committed fully rather than quietly disengaging. Do not tell a story where you were simply right and the manager was stupid.", "tags": ["star", "backbone", "conflict", "leadership-principle"], "difficulty": 4}, {"company": "Amazon", "round": "dsa", "text": "Given an array of integers and a target, return the indices of two numbers that add up to the target. Explain the optimal approach.", "ideal": "Hash map from value to index, iterate once, for each element check if target - x is in the map. O(n) time, O(n) space. Mention the brute force O(n^2) first to show you can see the trade-off, then optimize. Confirm behaviour with duplicates and no-solution case.", "tags": ["hashing", "arrays", "two-sum", "complexity"], "difficulty": 3}, {"company": "Amazon", "round": "dsa", "text": "Find the maximum sum of any contiguous subarray of an array of integers.", "ideal": "Kadane's algorithm: running sum = max(x, running + x), track global max. O(n) time, O(1) space. Explain why discarding a negative running sum is safe, and handle an all-negative array.", "tags": ["dp", "kadane", "arrays", "complexity"], "difficulty": 4}, {"company": "Amazon", "round": "system_design", "text": "Design a URL shortener like amzn.to. What are the key components?", "ideal": "Clarify scale (reads vs writes), then: API layer, ID generation (base62 of a counter or hash), key-value store for mapping, cache for hot links, 301 vs 302 redirect choice, analytics pipeline, and collision handling. State the read-heavy caching strategy explicitly.", "tags": ["system-design", "hld", "hashing", "caching", "scale"], "difficulty": 4}, {"company": "Amazon", "round": "technical", "text": "What is the difference between a process and a thread?", "ideal": "A process has its own memory space; threads share the process's heap and code but have separate stacks and registers. Context switching between threads is cheaper. Mention races and locks, and that Python has the GIL as a real-world caveat.", "tags": ["os", "process", "thread", "concurrency"], "difficulty": 3}, {"company": "Google", "round": "dsa", "text": "Given a binary tree, return its level-order traversal.", "ideal": "BFS with a queue; process one level at a time by recording the queue size before the inner loop. O(n) time, O(width) space. Mention DFS-with-depth as an alternative and why BFS is natural here.", "tags": ["trees", "bfs", "queue", "traversal"], "difficulty": 3}, {"company": "Google", "round": "dsa", "text": "You are given a stream of numbers. Design a structure that returns the median at any time.", "ideal": "Two heaps: a max-heap for the lower half and a min-heap for the upper half, rebalanced so their sizes differ by at most one. Median is the top of the larger heap or the average of both tops. Insert O(log n), median O(1).", "tags": ["heaps", "stream", "median", "design"], "difficulty": 4}, {"company": "Google", "round": "dsa", "text": "Explain how you would find the longest substring without repeating characters.", "ideal": "Sliding window with a map of last-seen index. Move the right pointer, on repeat jump the left pointer to max(left, last_seen+1). O(n) time, O(min(n, alphabet)) space. Trace a small example like 'abcabcbb'.", "tags": ["sliding-window", "strings", "hashmap", "complexity"], "difficulty": 4}, {"company": "Google", "round": "system_design", "text": "Design a rate limiter for an API.", "ideal": "Clarify per-user vs global, and hard vs soft limits. Compare fixed window, sliding window log, token bucket (allows bursts) and leaky bucket. Token bucket in a Redis-like store with atomic increment is the usual answer. Discuss distributed edge cases and response code 429 + Retry-After.", "tags": ["system-design", "rate-limiting", "token-bucket", "distributed"], "difficulty": 4}, {"company": "Google", "round": "behavioral", "text": "Tell me about a technical project you are most proud of and what you would do differently.", "ideal": "Pick one project with real depth, explain the hardest technical decision, then genuinely critique it (design debt, missing tests, scale limit) and say what you would change. Self-awareness is the scored trait here.", "tags": ["project", "reflection", "googleyness", "depth"], "difficulty": 3}, {"company": "Microsoft", "round": "dsa", "text": "Reverse a linked list. Which approach do you choose and why?", "ideal": "Iterative with three pointers (prev, curr, next) is O(n) time and O(1) space. Recursive is O(n) stack space. Walk the pointer updates aloud and state the new head. Handle empty and single-node lists.", "tags": ["linked-list", "pointers", "iteration", "complexity"], "difficulty": 3}, {"company": "Microsoft", "round": "technical", "text": "What is the difference between a stack and a heap memory?", "ideal": "Stack holds function frames and local values, is fast, LIFO and size-limited; heap holds dynamically allocated objects, is larger and freed by GC or manually. Mention that the stack is per-thread while the heap is shared.", "tags": ["os", "memory", "stack", "heap"], "difficulty": 3}, {"company": "Microsoft", "round": "technical", "text": "How does an index improve SQL query performance, and when can it hurt?", "ideal": "An index is a B-tree keyed on the column, turning a full scan into a logarithmic lookup. It hurts writes (extra maintenance), consumes space, and is ignored for low-cardinality columns or when leading columns of a composite index are not used.", "tags": ["dbms", "index", "b-tree", "performance"], "difficulty": 3}, {"company": "Microsoft", "round": "behavioral", "text": "Describe a bug you shipped and how you found it.", "ideal": "STAR with real debugging detail: the symptom, the hypothesis list, the tool you used (logs, debugger, bisect), the root cause, the fix, and the test or alert you added so it cannot recur. Owning the mistake scores higher than blaming.", "tags": ["star", "debugging", "ownership", "learning"], "difficulty": 3}, {"company": "Flipkart", "round": "dsa", "text": "Design an LRU cache with get and put in O(1).", "ideal": "Hash map from key to node plus a doubly linked list for recency order. get moves the node to the front; put evicts the tail when capacity is exceeded. Explain each operation's O(1) guarantee and the eviction boundary case.", "tags": ["design", "lru", "hashmap", "linked-list"], "difficulty": 4}, {"company": "Flipkart", "round": "system_design", "text": "How would you design the inventory system for a flash sale?", "ideal": "Clarify oversell tolerance first. Then: pre-warm inventory in a fast store, atomic decrement or reservation with TTL, queue-based order intake, idempotency keys, and a reconciliation job. Discuss contention, locking vs optimistic concurrency, and graceful 'sold out' UX.", "tags": ["system-design", "inventory", "concurrency", "e-commerce"], "difficulty": 5}, {"company": "Flipkart", "round": "technical", "text": "What is idempotency and why does it matter in payments?", "ideal": "An operation that gives the same result when repeated. In payments, retries with an idempotency key prevent double debits. Explain the server-side unique key + stored response pattern.", "tags": ["api", "idempotency", "payments", "reliability"], "difficulty": 4}, {"company": "Flipkart", "round": "behavioral", "text": "Tell me about a time you had to learn something very fast to finish a task.", "ideal": "STAR, but emphasise method: what you read, what you skipped, how you validated understanding with a small prototype, and the deadline you met. Name the specific resource you used.", "tags": ["star", "learning", "velocity", "ownership"], "difficulty": 3}, {"company": "Zoho", "round": "technical", "text": "What is the difference between a structure and a union in C?", "ideal": "A struct allocates space for all members simultaneously; a union allocates space for the largest member and members share it. Struct size is roughly the sum with padding; union size is the max member. Unions are for memory reuse and type punning.", "tags": ["c", "struct", "union", "memory"], "difficulty": 2}, {"company": "Zoho", "round": "technical", "text": "Explain pointer arithmetic with an example.", "ideal": "Incrementing a pointer moves it by sizeof(type) bytes; subtracting two pointers of the same array yields the element count. Show int *p; p+1 advances 4 bytes. Mention that void* arithmetic is illegal and out-of-bounds arithmetic is undefined behaviour.", "tags": ["c", "pointers", "memory", "undefined-behaviour"], "difficulty": 3}, {"company": "Zoho", "round": "dsa", "text": "Check whether a given string is a palindrome, ignoring case and spaces.", "ideal": "Two pointers from both ends, skipping non-alphanumerics, compare lowercase characters. O(n) time, O(1) space. Say why you avoid building a cleaned copy of the string.", "tags": ["strings", "two-pointer", "coding", "edge-cases"], "difficulty": 2}, {"company": "Zoho", "round": "hr", "text": "You were not selected in a previous interview. What did you change afterwards?", "ideal": "Be honest and specific about the gap (e.g. 'I froze on recursion') and name the concrete action and proof of improvement (50 problems solved, a project rewritten). Shows coachability, which Zoho weights heavily.", "tags": ["self-awareness", "coachability", "honesty"], "difficulty": 2}, {"company": "Generic Fresher", "round": "technical", "text": "Explain the four pillars of object-oriented programming with one example each.", "ideal": "Encapsulation (private fields + getters), Abstraction (interface hiding detail), Inheritance (Dog extends Animal), Polymorphism (same call, different behaviour - overloading/overriding). Use one running example like a Payment class across the four pillars.", "tags": ["oop", "fundamentals", "java", "abstraction"], "difficulty": 2}, {"company": "Generic Fresher", "round": "technical", "text": "What is the difference between a list and a tuple in Python, and when would you use each?", "ideal": "Lists are mutable, tuples immutable. Tuples are hashable so they can be dict keys, slightly faster and signal intent. Use tuples for fixed records (coordinates) and lists for collections that change.", "tags": ["python", "data-structures", "immutability"], "difficulty": 2}, {"company": "Generic Fresher", "round": "technical", "text": "Explain the difference between TCP and UDP.", "ideal": "TCP is connection-oriented, ordered, reliable, with congestion control; UDP is connectionless, unordered, unreliable but low latency. Examples: HTTP/file transfer on TCP, DNS/video/gaming on UDP.", "tags": ["networking", "tcp", "udp", "fundamentals"], "difficulty": 3}, {"company": "Generic Fresher", "round": "technical", "text": "What is a deadlock and how can you prevent it?", "ideal": "Two or more processes each hold a resource and wait for one held by another. Four conditions: mutual exclusion, hold and wait, no preemption, circular wait. Prevent by consistent lock ordering, timeouts, or a single global lock.", "tags": ["os", "deadlock", "concurrency", "fundamentals"], "difficulty": 3}, {"company": "Generic Fresher", "round": "dsa", "text": "How would you check if two strings are anagrams of each other?", "ideal": "Count character frequencies in a hash map (or a 26-size array) for the first string, decrement for the second; all zeros means anagram. O(n) time. Mention the sort-and-compare alternative at O(n log n) and the length pre-check.", "tags": ["strings", "hashmap", "counting", "complexity"], "difficulty": 2}, {"company": "Generic Fresher", "round": "dsa", "text": "Write an algorithm to find the factorial of a number iteratively and recursively. Compare them.", "ideal": "Iterative: multiply 1..n, O(n) time O(1) space. Recursive: n * fact(n-1) with base case n<=1, O(n) stack space. Mention integer overflow for large n and the case n=0 returning 1.", "tags": ["recursion", "iteration", "coding", "overflow"], "difficulty": 2}, {"company": "Generic Fresher", "round": "dsa", "text": "Given a sorted array, find the index of a target element efficiently.", "ideal": "Binary search: low=0, high=n-1, mid=(low+high)//2, compare and halve the range. O(log n) time. Mention the sorted precondition and off-by-one care, and return -1 when not found.", "tags": ["binary-search", "arrays", "complexity", "sorted"], "difficulty": 3}, {"company": "Generic Fresher", "round": "hr", "text": "What is your biggest weakness?", "ideal": "Pick a real, non-fatal weakness with the concrete step you are taking and evidence of progress. 'I used to go silent when stuck; now I timebox to 20 minutes then ask' beats 'I am a perfectionist'.", "tags": ["self-awareness", "honesty", "growth"], "difficulty": 2}, {"company": "Generic Fresher", "round": "hr", "text": "Why should we hire you over other candidates with the same degree?", "ideal": "One differentiator with proof: a shipped project, an internship outcome, an open-source contribution, a certification with a working demo. Then tie it to the role's needs. Never say 'I am hardworking'.", "tags": ["differentiation", "value", "proof"], "difficulty": 2}, {"company": "Generic Fresher", "round": "hr", "text": "Do you have any questions for us?", "ideal": "Always have two questions ready: one about the team/tech stack and one about what success looks like in the first six months. Avoid questions answered on the website or about salary in round one.", "tags": ["closing", "curiosity", "preparation"], "difficulty": 1}, {"company": "Generic Fresher", "round": "behavioral", "text": "Tell me about a time you failed and what you learned.", "ideal": "STAR with a genuine failure (not a humble-brag), your specific contribution to the failure, the fix, and a changed behaviour you can prove later. The learning must be verifiable, not 'I learned to be careful'.", "tags": ["star", "failure", "learning", "self-awareness"], "difficulty": 2}, {"company": "Generic Fresher", "round": "behavioral", "text": "Describe a time you worked in a team where someone was not contributing.", "ideal": "STAR: what you observed, whether you spoke to them privately first, what you redistributed, whether you escalated, and the outcome. Show empathy plus delivery focus.", "tags": ["teamwork", "conflict", "star", "delivery"], "difficulty": 2}, {"company": null, "round": "hr", "text": "Walk me through your resume in 60 seconds.", "ideal": "Chronological but selective: education, strongest technical skill with proof, one project or internship with a result, and a closing line on why this role. Do not list every subject you studied.", "tags": ["intro", "resume", "communication"], "difficulty": 1}, {"company": null, "round": "technical", "text": "What is the difference between an abstract class and an interface?", "ideal": "An abstract class can hold state and concrete methods and is extended once; an interface declares a contract, supports multiple implementation, and has no state (default methods aside). Choose an abstract class for shared code, an interface for capability.", "tags": ["oop", "interfaces", "abstraction", "design"], "difficulty": 3}, {"company": null, "round": "hr", "text": "How do you handle pressure or a very tight deadline?", "ideal": "Give your actual method: prioritise by impact, break work into chunks, communicate status early, cut scope not quality. Back it with one short example. Vague answers like 'I stay calm' score poorly.", "tags": ["pressure", "prioritisation", "method"], "difficulty": 2}, {"company": null, "round": "behavioral", "text": "Tell me about a time you had to convince someone to accept your idea.", "ideal": "STAR with the resistance, the evidence you brought, how you adapted your argument to their concern, and the outcome. Listening to the objection is the part interviewers score.", "tags": ["star", "persuasion", "influence", "communication"], "difficulty": 3}, {"company": null, "round": "aptitude", "text": "A shopkeeper marks an item 40% above cost and then gives a 25% discount. What is his profit percentage?", "ideal": "Let cost be 100. Marked price = 140. Selling price after 25% discount = 140 x 0.75 = 105. Profit = 5 on 100, so 5%. Show the base-100 shortcut explicitly - it avoids algebra errors.", "tags": ["aptitude", "percentage", "profit-loss"], "difficulty": 2}, {"company": null, "round": "aptitude", "text": "If 6 workers can finish a task in 12 days, how many days will 9 workers take, working at the same rate?", "ideal": "Work is constant: 6 x 12 = 72 worker-days. With 9 workers, 72/9 = 8 days. State the inverse proportion explicitly.", "tags": ["aptitude", "time-work", "ratio"], "difficulty": 1}, {"company": null, "round": "aptitude", "text": "Complete the series: 2, 6, 12, 20, 30, ?", "ideal": "Differences are 4, 6, 8, 10 - increasing by 2. Next difference is 12, so 30 + 12 = 42. Alternatively n(n+1): 6x7 = 42. Give the rule, not just the number.", "tags": ["aptitude", "series", "reasoning"], "difficulty": 2}, {"company": null, "round": "aptitude", "text": "In a class of 40 students, 60% passed maths and 50% passed science. 25% passed both. How many failed both subjects?", "ideal": "Passed at least one = 60 + 50 - 25 = 85%. Failed both = 15% of 40 = 6 students. Use inclusion-exclusion and state each step.", "tags": ["aptitude", "sets", "venn", "percentage"], "difficulty": 3}, {"company": null, "round": "aptitude", "text": "A sum doubles in 8 years at simple interest. In how many years will it become four times itself?", "ideal": "Doubling means SI = P in 8 years, so rate = 12.5% per year. For 4x, SI must be 3P, which takes 8 x 3 = 24 years. Emphasise that SI grows linearly.", "tags": ["aptitude", "simple-interest", "quantitative"], "difficulty": 2}];
+const SEED_REVIEWS = [{"student_name": "Aarav", "company": "TCS", "round": "hr", "difficulty_felt": 2, "rating": 4, "text": "Very friendly panel. They asked a lot about relocation and shift and whether I would sign the bond. No deep technical questions at all, mostly about my final year project.", "days_ago": 40}, {"student_name": "Meera", "company": "TCS", "round": "technical", "difficulty_felt": 3, "rating": 3, "text": "Asked me to write SQL query for second highest salary and then kept asking about joins. Also asked about primary key vs unique key. My advice: revise SQL properly.", "days_ago": 22}, {"student_name": "Rohit", "company": "TCS", "round": "hr", "difficulty_felt": 1, "rating": 5, "text": "Total 15 minutes. Tell me about yourself, why TCS, relocation, and if I know what TCS does. They really want to hear that you are okay with any location.", "days_ago": 12}, {"student_name": "Sneha", "company": "Infosys", "round": "technical", "difficulty_felt": 3, "rating": 4, "text": "70 percent of my interview was my project. They asked why I chose that database and made me explain the architecture on paper. Then normalization questions, 3NF specifically.", "days_ago": 30}, {"student_name": "Karthik", "company": "Infosys", "round": "technical", "difficulty_felt": 4, "rating": 2, "text": "Panel drilled me on OOP for 20 minutes - overloading vs overriding, abstract class vs interface, then asked about ACID properties. Felt underprepared on theory.", "days_ago": 18}, {"student_name": "Divya", "company": "Infosys", "round": "hr", "difficulty_felt": 2, "rating": 4, "text": "Standard HR round. They asked what I would do if given a technology I do not know. Also asked about my Infosys Springboard certification, so do mention it.", "days_ago": 9}, {"student_name": "Imran", "company": "Wipro", "round": "technical", "difficulty_felt": 2, "rating": 4, "text": "Asked me to reverse a string and check palindrome in Java. Also difference between == and equals. Pretty basic, they mainly checked if I could explain my code.", "days_ago": 25}, {"student_name": "Priya", "company": "Wipro", "round": "hr", "difficulty_felt": 1, "rating": 3, "text": "HR asked about the service agreement and relocation straight away. Be very clear and do not hesitate on the bond question, they mark you down for that.", "days_ago": 15}, {"student_name": "Nikhil", "company": "Cognizant", "round": "technical", "difficulty_felt": 3, "rating": 4, "text": "SQL heavy. Second highest salary, types of joins, then a question on when to use left join. They also asked me to pick one language and go deep.", "days_ago": 20}, {"student_name": "Ananya", "company": "Cognizant", "round": "technical", "difficulty_felt": 4, "rating": 3, "text": "Started from DBMS normalization and went into indexing. Asked why an index slows down inserts. I had read it but could not explain it well.", "days_ago": 7}, {"student_name": "Vikram", "company": "Accenture", "round": "behavioral", "difficulty_felt": 2, "rating": 5, "text": "Almost entirely situational questions - missed deadline, team conflict, disagreeing with a senior. They want STAR format, that is it. Prepare 5 stories and you are set.", "days_ago": 35}, {"student_name": "Riya", "company": "Accenture", "round": "hr", "difficulty_felt": 1, "rating": 4, "text": "Very conversational. Asked where I see myself in 5 years and about my hobbies. Very important to look confident and smile, they judge communication a lot.", "days_ago": 11}, {"student_name": "Aditya", "company": "Amazon", "round": "behavioral", "difficulty_felt": 5, "rating": 4, "text": "Every single round had two leadership principle questions. They dig for 4-5 follow ups on the same story - what exactly did YOU do, what was the metric. One story about ownership is not enough.", "days_ago": 45}, {"student_name": "Pooja", "company": "Amazon", "round": "dsa", "difficulty_felt": 4, "rating": 5, "text": "Two sum variant followed by a sliding window problem. They cared more about me stating complexity and edge cases than finishing the code. Always ask clarifying questions first.", "days_ago": 28}, {"student_name": "Sameer", "company": "Amazon", "round": "system_design", "difficulty_felt": 5, "rating": 3, "text": "Asked to design a URL shortener and then went very deep on how I generate the unique id and how I handle collisions. Also asked about caching and analytics. I underestimated this round.", "days_ago": 14}, {"student_name": "Tanvi", "company": "Google", "round": "dsa", "difficulty_felt": 5, "rating": 4, "text": "No small talk, straight to the problem. They gave a hint only after I was stuck for a while. Very focused on optimal complexity, brute force was not accepted.", "days_ago": 50}, {"student_name": "Arjun", "company": "Google", "round": "system_design", "difficulty_felt": 5, "rating": 3, "text": "Rate limiter design. They expected me to compare token bucket vs sliding window and talk about distributed state. Tough round, prepare properly.", "days_ago": 16}, {"student_name": "Neha", "company": "Microsoft", "round": "dsa", "difficulty_felt": 4, "rating": 5, "text": "Reverse linked list and a tree question. The interviewer was helpful and wanted me to think aloud. They also asked one OS question about process vs thread.", "days_ago": 21}, {"student_name": "Harsh", "company": "Microsoft", "round": "technical", "difficulty_felt": 3, "rating": 4, "text": "Indexing and stack vs heap were asked. Also a debugging story from my project. Be ready to admit a bug you shipped, they like honesty there.", "days_ago": 6}, {"student_name": "Ishita", "company": "Flipkart", "round": "system_design", "difficulty_felt": 5, "rating": 3, "text": "Flash sale inventory design. They kept pushing on how to avoid overselling. Concurrency and idempotency came up again and again.", "days_ago": 19}, {"student_name": "Siddharth", "company": "Zoho", "round": "technical", "difficulty_felt": 4, "rating": 4, "text": "C fundamentals and pointers. Nothing about frameworks. They also asked me why I was rejected somewhere before, so keep an honest answer ready.", "days_ago": 24}, {"student_name": "Kavya", "company": "Generic Fresher", "round": "hr", "difficulty_felt": 2, "rating": 4, "text": "Weakness, why should we hire you, and any questions for us. Having two good questions at the end changed the tone of the interview completely.", "days_ago": 5}, {"student_name": "Rahul", "company": "Generic Fresher", "round": "technical", "difficulty_felt": 3, "rating": 3, "text": "OOP four pillars, TCP vs UDP, and one binary search question. Mixed round, tested breadth over depth.", "days_ago": 3}];
+const SEED_COMPANIES = [{"name": "TCS", "type": "service", "about": "Mass hiring via TCS NQT. Expect aptitude + technical + HR. Interviewers are usually friendly, focus on basics and willingness to relocate / work in any shift.", "rounds": ["aptitude", "technical", "hr"]}, {"name": "Infosys", "type": "service", "about": "Infosys online test + technical + HR. Heavy emphasis on projects, DBMS and OOP. Certification questions (Infosys Springboard) come up often.", "rounds": ["aptitude", "technical", "hr"]}, {"name": "Wipro", "type": "service", "about": "Wipro Elite NTH. Aptitude + coding (2 questions) + technical + HR. Panel often checks communication and bond/relocation comfort.", "rounds": ["aptitude", "technical", "hr"]}, {"name": "Cognizant", "type": "service", "about": "GenC / GenC Elevate. Aptitude + coding + technical + HR. Interviewers probe SQL joins and one language deeply.", "rounds": ["aptitude", "technical", "hr"]}, {"name": "Accenture", "type": "service", "about": "Cognitive + technical assessment, then a combined technical-cum-HR round. Behavioural questions (situation based) carry a lot of weight.", "rounds": ["aptitude", "technical", "hr", "behavioral"]}, {"name": "Capgemini", "type": "service", "about": "Pseudo code + English communication test, then technical + HR. Pseudo-code reading is a distinct section.", "rounds": ["aptitude", "technical", "hr"]}, {"name": "Amazon", "type": "product", "about": "Online assessment (2 DSA) + 3-4 technical loops. Every round has 2 Leadership Principle questions. Expect deep follow-ups on trade-offs and complexity.", "rounds": ["dsa", "system_design", "behavioral", "technical"]}, {"name": "Google", "type": "product", "about": "Phone screen + 4-5 onsite rounds. Pure problem solving and coding on a shared doc, plus Googleyness. No trivia - they want optimal complexity.", "rounds": ["dsa", "system_design", "behavioral"]}, {"name": "Microsoft", "type": "product", "about": "Codility test then 3-4 rounds. Mix of DSA, CS fundamentals (OS/DBMS) and behavioural. Strong focus on clarifying questions first.", "rounds": ["dsa", "technical", "system_design", "behavioral"]}, {"name": "Flipkart", "type": "product", "about": "Machine coding + DSA + design + hiring manager. Machine coding round (working code in 90 min) is the filter.", "rounds": ["dsa", "system_design", "behavioral", "technical"]}, {"name": "Zoho", "type": "product", "about": "Written aptitude + C/C++ coding on paper, then multiple technical rounds. Very fundamentals-heavy, low tolerance for vague answers.", "rounds": ["aptitude", "technical", "dsa", "hr"]}, {"name": "Generic Fresher", "type": "both", "about": "A balanced fresher interview: technical fundamentals, one coding question, one HR/behavioural question. Use this when the company is not listed.", "rounds": ["technical", "dsa", "hr", "behavioral"]}];
+</script>
+<script>
+/* ---- persistence + local bootstrap ---- */
+
+const STORE_KEY = 'interviewloop_voice_state_v1';
+
+function freshState() {
+  return {
+    questions: QUESTIONS.map((q, i) => ({
+      id: i + 1,
+      company: q.company || 'Generic Fresher',
+      round: q.round,
+      text: q.text,
+      ideal: q.ideal,
+      tags: (q.tags || []).join(','),
+      difficulty: q.difficulty || 2,
+      times_asked: 0,
+    })),
+    reviews: SEED_REVIEWS.map((r, i) => ({
+      id: i + 1,
+      student_name: r.student_name,
+      company: r.company,
+      round: r.round,
+      difficulty_felt: r.difficulty_felt,
+      rating: r.rating,
+      text: r.text,
+      created_at: new Date(Date.now() - (r.days_ago || 0) * 86400000).toISOString(),
+    })),
+    sessions: [],
+    sessionSeq: 0,
+  };
+}
+
+let state;
+try {
+  const raw = localStorage.getItem(STORE_KEY);
+  state = raw ? JSON.parse(raw) : freshState();
+  if (!state || !state.questions || !state.questions.length) state = freshState();
+} catch (e) { state = freshState(); }
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+</script>
+<script>
+/* =====================================================================
+   InterviewLoop — a conversation, not a form.
+   The interview screen has no buttons at all. Turn-taking is driven by
+   speech: the interviewer speaks, the mic opens, you talk, silence sends
+   your answer, it replies. Spoken commands (repeat / skip / hint / stop)
+   replace every control that used to live here.
+   ===================================================================== */
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const prettyRound = r => ({ aptitude:'Aptitude', technical:'Technical', hr:'HR / Behavioural',
+  behavioral:'Behavioural', dsa:'DSA', system_design:'System Design' }[r] || r);
+const BAND_COLOR = s => s >= 7 ? 'var(--good)' : s >= 5.5 ? 'var(--warn)' : 'var(--bad)';
+
+async function api(path, opts = {}) {
+  if (window.localApi) {
+    try { return await window.localApi(path, opts); }
+    catch (e) { throw new Error(e.message || 'local call failed'); }
+  }
+  const res = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || data.reason || `Request failed (${res.status})`);
+  return data;
+}
+
+let toastTimer = null;
+function toast(msg, ms = 3400) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = msg;
+  requestAnimationFrame(() => el.classList.add('on'));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), ms);
+}
+
+const S = {
+  sessionId: null, seq: 1, of: 4,
+  answeringProbe: false, probeText: null,
+  currentQuestion: '', lastSpeak: '', lastAnswer: '',
+  botName: 'Interviewer', studentName: 'there',
+};
+
+/* ------------------------------------------------------------------ viz */
+function makeViz(canvas) {
+  let ctx = null, raf = null, mode = 'idle', levels = [];
+  const N = 24;
+
+  function size() {
+    if (!canvas) return;
+    const r = canvas.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.round((r.width || 190) * dpr));
+    const h = Math.max(1, Math.round((r.height || 190) * dpr));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    ctx = canvas.getContext('2d');
+  }
+
+  function color() {
+    return mode === 'speaking' ? '61,220,151' : mode === 'listening' ? '255,107,129'
+         : mode === 'thinking' ? '255,180,84' : '157,180,255';
+  }
+
+  function draw() {
+    if (!ctx) size();
+    if (!ctx) return;
+    const w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2;
+    ctx.clearRect(0, 0, w, h);
+    if (mode === 'idle') { levels = levels.map(() => 0); }
+
+    const base = Math.min(w, h) * 0.30;
+    const c = color();
+    for (let i = 0; i < N; i++) {
+      const target = mode === 'idle' ? 0
+        : (mode === 'listening' ? 0.35 + Math.random() * 0.9
+        : mode === 'speaking' ? 0.3 + Math.abs(Math.sin(i * 0.7 + performance.now() / 260)) * 0.8
+        : 0.2 + Math.random() * 0.35);
+      levels[i] = (levels[i] == null ? target : levels[i] * 0.72 + target * 0.28);
+      const len = base * 0.18 + base * 0.62 * levels[i];
+      const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+      const x1 = cx + Math.cos(a) * base, y1 = cy + Math.sin(a) * base;
+      const x2 = cx + Math.cos(a) * (base + len), y2 = cy + Math.sin(a) * (base + len);
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(${c},${0.28 + levels[i] * 0.55})`;
+      ctx.lineWidth = Math.max(2, (w / 190) * 2.4);
+      ctx.lineCap = 'round';
+      ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  return {
+    set(m) { mode = m; if (!raf) draw(); },
+    start() { size(); if (!raf) draw(); },
+    stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } },
+    resize: size,
+  };
+}
+
+const lobbyViz = makeViz($('lobbyViz'));
+const dockViz = makeViz(document.querySelector('#stage #viz') || null);
+const bars = (() => {
+  const host = $('bars');
+  const els = [];
+  for (let i = 0; i < 14; i++) { const b = document.createElement('i'); host.appendChild(b); els.push(b); }
+  return els;
+})();
+let barsTimer = null;
+function animateBars(active) {
+  $('bars').classList.toggle('act', active);
+  if (barsTimer) { clearInterval(barsTimer); barsTimer = null; }
+  if (!active) { bars.forEach(b => { b.style.height = '5px'; }); return; }
+  barsTimer = setInterval(() => {
+    bars.forEach(b => { b.style.height = (5 + Math.random() * 17) + 'px'; });
+  }, 110);
+}
+
+/* --------------------------------------------------------------- thread */
+function addBubble(kind, text, opts) {
+  const thread = $('thread');
+  const el = document.createElement('div');
+  el.className = 'b ' + kind;
+  const who = kind === 'bot' ? (opts && opts.who || S.botName)
+            : kind === 'you' ? 'You' : '';
+  el.innerHTML = (who ? `<div class="who">${esc(who)}</div>` : '') + esc(text);
+  thread.appendChild(el);
+  thread.scrollTop = thread.scrollHeight;
+  return el;
+}
+
+function sysNote(text) {
+  const el = addBubble('sys', text);
+  setTimeout(() => { el.style.opacity = '0.45'; }, 2600);
+}
+
+let liveEl = null;
+function setLive(text) {
+  const thread = $('thread');
+  if (!liveEl) {
+    liveEl = document.createElement('div');
+    liveEl.className = 'b live';
+    thread.appendChild(liveEl);
+  }
+  liveEl.textContent = text || '';
+  thread.scrollTop = thread.scrollHeight;
+}
+function clearLive() { if (liveEl) { liveEl.remove(); liveEl = null; } }
+
+/* ----------------------------------------------------------- voice state */
+function setUIState(s) {
+  const orb = $('dockOrb');
+  if (orb) orb.dataset.state = s;
+  const label = { speaking: 'Interviewer is speaking', listening: 'Listening to you',
+    thinking: 'Thinking', idle: 'Waiting' }[s] || s;
+  const ds = $('dockState'); if (ds) ds.textContent = label;
+
+  const hint = {
+    speaking: 'Listen — you can answer as soon as the microphone opens.',
+    listening: 'Answer normally. Stop talking and your answer is sent.',
+    thinking: 'Scoring your answer…',
+    idle: 'Speak any time, or say “repeat”.',
+  }[s] || '';
+  const dh = $('dockHint'); if (dh) dh.textContent = hint;
+
+  animateBars(s === 'listening');
+  dockViz.set(s);
+  if (s === 'listening') dockViz.start(); 
+}
+
+function capBanner(html, kind) {
+  $('capBanner').innerHTML = `<div class="cap ${kind || 'warn'}">${html}</div>`;
+}
+
+/* ------------------------------------------------------- voice readiness */
+function checkVoice() {
+  const c = window.VoiceEngine ? VoiceEngine.capabilities() : { works: false };
+  if (!c.stt && !c.tts) {
+    capBanner('This browser has no speech support. Use <b>Chrome</b>, <b>Edge</b>, or <b>Safari 16+</b>.', 'bad');
+    return false;
+  }
+  if (!c.stt) {
+    capBanner('Your browser can <b>speak</b> but cannot listen. Chrome or Edge can do both.', 'bad');
+    return false;
+  }
+  if (!c.secure) {
+    capBanner('Speech recognition needs a <b>secure page</b> — open <code>http://localhost:8000</code> or an HTTPS link. An IP address will not work.', 'bad');
+    return false;
+  }
+  if (!c.tts) capBanner('Speech output is unavailable, so questions will appear as text.', 'warn');
+  return true;
+}
+
+/* --------------------------------------------------------------- lobby */
+let COMPANIES = [];
+
+async function loadCompanies() {
+  try {
+    const data = await api('/api/companies');
+    COMPANIES = data.companies || [];
+    const sel = $('companySel');
+    sel.innerHTML = COMPANIES.map(c =>
+      `<option value="${esc(c.name)}">${esc(c.name)} — ${esc(c.type)}</option>`).join('');
+    const pref = COMPANIES.find(c => c.name === 'TCS') || COMPANIES[0];
+    if (pref) { sel.value = pref.name; await loadRounds(); }
+  } catch (e) {
+    capBanner('Could not load the question bank: ' + esc(e.message), 'bad');
+  }
+}
+
+async function loadRounds() {
+  const co = COMPANIES.find(c => c.name === $('companySel').value);
+  const sel = $('roundSel');
+  const rounds = (co && co.rounds && co.rounds.length) ? co.rounds : ['technical', 'hr'];
+  sel.innerHTML = rounds.map(r => `<option value="${esc(r)}">${esc(prettyRound(r))}</option>`).join('');
+  if (co) {
+    const bits = [];
+    if (co.review_count) bits.push(`${co.review_count} reviews mined`);
+    if (co.question_count) bits.push(`${co.question_count} questions`);
+    if (co.avg_rating) bits.push(`rated ${co.avg_rating}/5 by past candidates`);
+    $('blurb').innerHTML = `${esc(prettyRound(sel.value))} round for <b>${esc(co.name)}</b>. ` +
+      (bits.length ? `<span class="muted">${bits.join(' · ')}</span>` : '');
+  }
+}
+
+/* ---------------------------------------------------------- start a call */
+let started = false;
+
+async function startInterview() {
+  if (started) return;
+  const name = ($('studentName').value || '').trim() || 'there';
+  if (!$('studentName').value.trim()) {
+    $('studentName').value = '';
+    $('opts').open = true;
+    toast('Add your name so the interviewer can greet you.');
+    $('studentName').focus();
+    return;
+  }
+  if (!checkVoice()) { $('opts').open = true; return; }
+
+  started = true;
+  S.studentName = name.slice(0, 40);
+  savePrefs();
+
+  try {
+    const data = await api('/api/sessions', {
+      method: 'POST',
+      body: JSON.stringify({
+        student_name: S.studentName,
+        company: $('companySel').value,
+        round: $('roundSel').value,
+        limit: Number($('lenSel').value),
+      }),
+    });
+
+    S.sessionId = data.session_id;
+    S.seq = 1; S.of = data.total_questions;
+    S.answeringProbe = false; S.probeText = null;
+
+    VoiceEngine.setAutoSubmitDelay(Number($('paceSel').value));
+    VoiceEngine.enable(true);
+
+    $('lobby').classList.add('hide');
+    $('stage').classList.remove('hide');
+    $('thread').innerHTML = '';
+    $('ivMeta').innerHTML = `<b>${esc(data.company)}</b> · ${esc(prettyRound(data.round))} round`;
+    $('dots').innerHTML = Array.from({ length: S.of }, (_, i) =>
+      `<i class="${i === 0 ? 'now' : ''}"></i>`).join('');
+    dockViz.resize();
+    requestAnimationFrame(() => dockViz.resize());
+    setUIState('speaking');
+
+    // The greeting, personalised by the two learning loops: previous reviews
+    // for this company/round and this student's own weak areas.
+    let greet = data.intro;
+    const weak = Object.keys(data.weak_areas || {});
+    if (weak.length) {
+      const w = weak.sort((a, b) => data.weak_areas[a] - data.weak_areas[b]).slice(0, 2);
+      greet += ` I'll also focus on ${w.join(' and ')}, which you scored low on last time.`;
+      setTimeout(() => sysNote(`focusing on your weak areas: ${w.join(', ')}`), 2600);
+    }
+
+    S.currentQuestion = data.first.text;
+    S.lastSpeak = `${greet} ${data.first.text}`;
+
+    // Two bubbles so it reads like speech, but one spoken turn so the mic
+    // opens exactly once, after the question has been read out.
+    addBubble('bot', greet);
+    setTimeout(() => addBubble('bot', data.first.text), 500);
+    VoiceEngine.turn(S.lastSpeak);
+  } catch (e) {
+    started = false;
+    toast('Could not start: ' + e.message);
+  }
+}
+
+/* ===================== spoken commands =====================
+   Every control that used to be a button is now something you can say.
+   Matched only on short utterances, so a real answer that happens to
+   contain the word "send" is never mistaken for an instruction. */
+const RULES = [
+  ['end',    /\b(end (the )?(interview|round)|stop (the )?interview|finish (the )?interview|i want to stop|let'?s stop)\b/i],
+  ['repeat', /\b(repeat( that)?|say (that )?again|what was the question|come again|pardon)\b/i],
+  ['skip',   /\b(skip( this| it)?|next question|move on|pass( on)?( this)?|don'?t know|no idea)\b/i],
+  ['hint',   /\b(hint|give me a clue|clue|help me with this)\b/i],
+  ['send',   /\b(send( it| my answer)?|submit|i'?m done|that'?s (my|all)|that'?s it|done|go ahead)\b/i],
+];
+
+function matchCommand(text) {
+  const t = String(text).trim().replace(/\s+/g, ' ').toLowerCase();
+  if (!t) return null;
+  const words = t.split(' ').length;
+  if (words > 6) return null;          // a long answer is never a command
+  for (const [act, re] of RULES) if (re.test(t)) return act;
+  return null;
+}
+
+async function runCommand(act) {
+  if (act === 'send') {
+    const t = VoiceEngine.finishTurn();
+    if (!t) VoiceEngine.listen();     // nothing captured: never strand the student
+    return;
+  }
+  if (act === 'repeat') {
+    sysNote('repeating the question');
+    VoiceEngine.turn(S.lastSpeak || S.currentQuestion);
+    return;
+  }
+  if (act === 'skip') { await doSkip(); return; }
+  if (act === 'hint') { await doHint(); return; }
+  if (act === 'end') { await doEnd(); return; }
+}
+
+/* ===================== answering ===================== */
+async function submitAnswer(text) {
+  if (!text || !S.sessionId) return;
+
+  const cmd = matchCommand(text);
+  if (cmd) { clearLive(); VoiceEngine.reset(); await runCommand(cmd); return; }
+
+  S.lastAnswer = text;
+  clearLive();
+  addBubble('you', text);
+
+  try {
+    const body = S.answeringProbe
+      ? { answer: text, followup_answer: S.probeText }
+      : { answer: text };
+    const data = await api(`/api/sessions/${S.sessionId}/answer`, {
+      method: 'POST', body: JSON.stringify(body),
+    });
+
+    const last = $('thread').querySelector('.b.you:last-of-type');
+    if (data.score && last) {
+      const chip = document.createElement('div');
+      chip.className = 'score';
+      chip.style.color = BAND_COLOR(data.score.overall);
+      chip.textContent = `${data.score.overall}/10 · ${data.score.band}`;
+      last.appendChild(chip);
+    }
+
+    if (data.type === 'probe') {
+      S.answeringProbe = true; S.probeText = data.probe;
+      const line = `${Math.round(data.score.overall)} out of 10. ${data.probe}`;
+      S.lastSpeak = line;
+      addBubble('bot', data.probe);
+      VoiceEngine.turn(line);
+      return;
+    }
+
+    if (data.type === 'next') {
+      S.answeringProbe = false; S.probeText = null;
+      S.seq = data.next.seq;
+      document.querySelectorAll('#dots i').forEach((d, i) => {
+        d.className = i < S.seq - 1 ? 'on' : i === S.seq - 1 ? 'now' : '';
+      });
+      const bridge = reaction(data.score);
+      const line = `${bridge} ${data.next.text}`;
+      S.lastSpeak = line;
+      S.currentQuestion = data.next.text;
+      addBubble('bot', data.next.text);
+      VoiceEngine.turn(line);
+      return;
+    }
+
+    if (data.type === 'report') {
+      addBubble('bot', data.report.closing || 'That wraps up the round.');
+      VoiceEngine.say(`That's the end of the round. ${data.report.closing || ''}`);
+      setTimeout(() => renderReport(data.report), 2200);
+    }
+  } catch (e) {
+    toast(e.message);
+    VoiceEngine.listen();
+  } finally {
+    VoiceEngine.reset();
+  }
+}
+
+// A short spoken reaction, so scoring is heard rather than read.
+function reaction(sc) {
+  if (!sc) return 'Okay.';
+  const s = sc.overall;
+  if (s >= 8) return 'Strong answer.';
+  if (s >= 7) return 'Good answer.';
+  if (s >= 5.5) return 'Alright, though that could be sharper.';
+  if (s >= 3.5) return 'That was a bit thin.';
+  return 'Okay. Let us move on.';
+}
+
+/* ===================== spoken actions ===================== */
+async function doSkip() {
+  VoiceEngine.stopListening();
+  sysNote('skipped');
+  try {
+    const data = await api(`/api/sessions/${S.sessionId}/skip`, { method: 'POST' });
+    if (data.type === 'report') return renderReport(data.report);
+    S.answeringProbe = false; S.probeText = null;
+    S.seq = data.next.seq;
+    S.currentQuestion = data.next.text;
+    S.lastSpeak = `Sure. ${data.next.text}`;
+    addBubble('bot', data.next.text);
+    VoiceEngine.turn(S.lastSpeak);
+  } catch (e) { toast(e.message); VoiceEngine.listen(); }
+}
+
+async function doHint() {
+  try {
+    const data = await api(`/api/sessions/${S.sessionId}/hint`, { method: 'POST' });
+    sysNote('hint');
+    addBubble('bot', data.hint, { who: 'Hint' });
+    VoiceEngine.turn(`Here is a hint. ${data.hint}`);
+  } catch (e) { toast(e.message); VoiceEngine.listen(); }
+}
+
+async function doEnd() {
+  VoiceEngine.stopListening();
+  sysNote('ending the interview');
+  try {
+    const data = await api(`/api/sessions/${S.sessionId}/finish`, { method: 'POST' });
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    VoiceEngine.say(`Alright, let's stop there. ${data.report.closing || ''}`);
+    setTimeout(() => renderReport(data.report), 1800);
+  } catch (e) { toast(e.message); }
+}
+
+/* ===================== report ===================== */
+function renderReport(r) {
+  VoiceEngine.stopListening();
+  VoiceEngine.enable(false);
+  $('stage').classList.add('hide');
+  $('report').classList.remove('hide');
+  $('report').innerHTML = `
+    <div class="card report">
+      <h2>${esc(r.company)} · ${esc(prettyRound(r.round))}</h2>
+      <p class="sub">${esc(r.student_name)} · ${r.turns} scored answer${r.turns === 1 ? '' : 's'}</p>
+      <div class="ringrow">
+        <svg width="70" height="70" viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="#212c4d" stroke-width="3.4"/>
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="${BAND_COLOR(r.overall)}" stroke-width="3.4"
+            stroke-linecap="round" stroke-dasharray="${r.overall / 10 * 97.4} 97.4" transform="rotate(-90 18 18)"/>
+          <text x="18" y="20.8" text-anchor="middle" font-size="9.5" font-weight="800" fill="#e8ecf8"
+            font-family="sans-serif">${r.overall}</text>
+        </svg>
+        <div>
+          <b style="font-size:15px">${esc(r.band)}</b>
+          <div class="muted" style="font-size:12.5px">${esc(r.verdict)}</div>
+          <div class="muted" style="font-size:12px;margin-top:4px">
+            strongest <b>${esc(r.strongest_dimension || '—')}</b> ·
+            weakest <b>${esc(r.weakest_dimension || '—')}</b></div>
+        </div>
+      </div>
+      <h3>What to fix next</h3>
+      <ul class="list">${(r.next_actions || []).map(a => `<li>${esc(a)}</li>`).join('')}</ul>
+      ${(r.focus_plan || []).length ? `<h3>Your focus plan</h3>
+        ${r.focus_plan.map(f => `<div class="advice"><b>${esc(f.topic)}</b> (${f.avg_score}/10)<br>${esc(f.why)}</div>`).join('')}` : ''}
+      <h3>Answer by answer</h3>
+      ${(r.per_turn || []).map(t => `<div class="turn">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <b style="font-size:13px;flex:1">Q${t.seq}. ${esc(t.question)}</b>
+          <b style="color:${BAND_COLOR(t.overall)};white-space:nowrap">${t.overall}/10</b></div>
+        <div class="muted" style="font-size:12.4px;margin:6px 0">You said: ${esc(t.answer)}</div>
+        <ul class="list">${(t.improvements || []).map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`).join('')}
+      <div class="banner">${esc(r.closing || '')}</div>
+      <a class="again" href="./">Talk to the interviewer again ↻</a>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===================== voice engine wiring ===================== */
+VoiceEngine.init({
+  onState: setUIState,
+  onTranscript: (text) => setLive(text),
+  onAutoSubmit: (text) => submitAnswer(text),
+  onError: (msg) => { if (msg) toast(msg); },
+});
+
+/* ===================== the only gesture in the whole app =====================
+   Browsers refuse to play audio until the user has interacted with the page
+   (autoplay policy) and need an explicit gesture to open the microphone.
+   One tap starts the call; after that it is entirely speech-driven. */
+$('startBtn').addEventListener('click', startInterview);
+
+/* Clicking anywhere on the interview reopens the mic if it ever goes quiet.
+   Not a control — just a safety net so a hiccup never ends the session. */
+$('stage').addEventListener('click', () => {
+  if (VoiceEngine.speaking || VoiceEngine.listening) return;
+  VoiceEngine.enable(true);
+  VoiceEngine.listen();
+});
+
+/* Keyboard equivalents stay for accessibility and quiet rooms. */
+document.addEventListener('keydown', (e) => {
+  if ($('stage').classList.contains('hide')) return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  const k = e.key.toLowerCase();
+  if (e.code === 'Space') { e.preventDefault(); const t = VoiceEngine.finishTurn(); if (!t) VoiceEngine.listen(); }
+  else if (k === 'r') { e.preventDefault(); VoiceEngine.turn(S.lastSpeak || S.currentQuestion); }
+  else if (k === 's') { e.preventDefault(); doSkip(); }
+  else if (k === 'h') { e.preventDefault(); doHint(); }
+  else if (k === 'm') { e.preventDefault(); VoiceEngine.enable(true); VoiceEngine.listen(); }
+  else if (e.key === 'Escape') { e.preventDefault(); doEnd(); }
+});
+
+/* ===================== boot ===================== */
+const PREF_KEY = 'interviewloop_prefs_v1';
+
+function loadPrefs() {
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem(PREF_KEY) || '{}') || {}; } catch (e) { p = {}; }
+  if (p.name) $('studentName').value = p.name;
+  if (p.company) pendingCompany = p.company;
+  if (p.round) pendingRound = p.round;
+  if (p.limit) $('lenSel').value = p.limit;
+  if (p.pace) $('paceSel').value = p.pace;
+  return p;
+}
+
+function savePrefs() {
+  try {
+    localStorage.setItem(PREF_KEY, JSON.stringify({
+      name: $('studentName').value.trim(),
+      company: $('companySel').value,
+      round: $('roundSel').value,
+      limit: $('lenSel').value,
+      pace: $('paceSel').value,
+    }));
+  } catch (e) {}
+}
+
+let pendingCompany = null, pendingRound = null;
+
+$('companySel').addEventListener('change', loadRounds);
+lobbyViz.start();
+lobbyViz.set('idle');
+
+const prefs = loadPrefs();
+// A first-time visitor needs to see who they're interviewing with, so the
+// panel starts open and closes itself once they start talking.
+$('opts').open = !prefs.name;
+
+loadCompanies().then(() => {
+  if (pendingCompany) {
+    $('companySel').value = pendingCompany;
+    loadRounds().then(() => { if (pendingRound) $('roundSel').value = pendingRound; });
+  }
+  if (!checkVoice()) { $('opts').open = true; return; }
+  $('callState').textContent = prefs.name ? `Ready when you are, ${prefs.name}` : 'Ready when you are';
+});
+</script>
+</body>
+</html>
